@@ -1,5 +1,5 @@
 import streamlit as st
-from streamlit_option_menu import option_menu
+# from streamlit_option_menu import option_menu
 import base64
 import plotly.express as px
 import pandas as pd
@@ -28,21 +28,21 @@ def set_background(png_file, size='cover'):
 
 # set_background("./images/renewables_collage.png", )
 
-# # Define the sidebar menu
-with st.sidebar:
-    selected = option_menu(
-        "Main Menu",
-        ["Introduction", "Data Gathering", "Data Prep/EDA", "PCA", "ARM", "Clustering", "Bayes", "Trees", "SVM", "Conclusion"],
-        icons=["house", "server", "table"],
-        menu_icon="cast",
-        default_index=0,
-    )
-# # Sidebar for navigation
-# # st.sidebar.title("Navigation")
-# tabs = st.selectbox("Go to", ["Introduction", "Data Gathering", "Data Prep/EDA", "Placeholder 1", "Placeholder 2"])
+# # # Define the sidebar menu
+# with st.sidebar:
+#     selected = option_menu(
+#         "Main Menu",
+#         ["Introduction", "Data Gathering", "Data Prep/EDA", "PCA", "ARM", "Clustering", "Bayes", "Trees", "SVM", "Conclusion"],
+#         icons=["house", "server", "table"],
+#         menu_icon="cast",
+#         default_index=0,
+#     )
+
+intro, data, tab3, tab4, tab5 = st.tabs(["Introduction", "Data Gathering", "Data Prep/EDA", "Placeholder 1", "Placeholder 2"])
 
 # Introduction Tab
-if selected == "Introduction":
+with intro:
+# if selected == "Introduction":
     st.title("Smart Grid Load Prediction with Renewable Engergy Integration & Optimization")
     st.write("""#### _Can peak energy demands be optimized by understanding when renewable energy is most efficient?_""")
     st.image("./images/renewables_collage.png", use_column_width=True, caption='Renewable Energy as envisioned by GenAI')
@@ -63,7 +63,8 @@ if selected == "Introduction":
     """)
 
 # Data Gathering Tab
-elif selected == "Data Gathering":
+with data:
+# elif selected == "Data Gathering":
     st.title("Data Gathering")
     # sub_tabs = st.selectbox("Data Gathering Details", ["P1", "P2", "P3"])
     st.write("Content for Data Gathering will go here.")
@@ -83,17 +84,17 @@ elif selected == "Data Gathering":
     # # Add some text to the Streamlit app
     # st.write("This is a bar chart showing the amount of different fruits.")
 
-# Data Prep/EDA Tab
-elif selected == "Data Prep/EDA":
-    st.title("Data Prep/EDA")
-    st.write("Content for Data Preparation and Exploratory Data Analysis will go here.")
+# # Data Prep/EDA Tab
+# elif selected == "Data Prep/EDA":
+#     st.title("Data Prep/EDA")
+#     st.write("Content for Data Preparation and Exploratory Data Analysis will go here.")
 
-# PCA Tab
-elif selected == "PCA":
-    st.title("PCA")
-    st.write("Content for Placeholder 1 will go here.")
+# # PCA Tab
+# elif selected == "PCA":
+#     st.title("PCA")
+#     st.write("Content for Placeholder 1 will go here.")
 
-# ARM Tab
-elif selected == "ARM":
-    st.title("ARM")
-    st.write("Content for Placeholder 2 will go here.")
+# # ARM Tab
+# elif selected == "ARM":
+#     st.title("ARM")
+#     st.write("Content for Placeholder 2 will go here.")
