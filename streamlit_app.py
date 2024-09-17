@@ -37,13 +37,13 @@ def set_background(png_file, size='cover'):
 #         menu_icon="cast",
 #         default_index=0,
 #     )
+st.title("Smart Grid Load Prediction with Renewable Engergy Integration & Optimization")
 
-intro, data, tab3, tab4, tab5 = st.tabs(["Introduction", "Data Gathering", "Data Prep/EDA", "Placeholder 1", "Placeholder 2"])
+intro, data, modeling, conclusion, references = st.tabs(["Introduction", "Data Prep & EDA", "Modeling", "Conclusion", "References"])
 
 # Introduction Tab
 with intro:
-# if selected == "Introduction":
-    st.title("Smart Grid Load Prediction with Renewable Engergy Integration & Optimization")
+    st.header("Introduction")
     st.write("""#### _Can peak energy demands be optimized by understanding when renewable energy is most efficient?_""")
     st.image("./images/renewables_collage.png", use_column_width=True, caption='Renewable Energy as envisioned by GenAI')
     st.write("""Earth is in a crisis. Since the dawn of the industrial revolution modern society has become heavily dependent on the finite resources of fossil fuels which are a major contributor, if not the sole driver, behind modern [warming trends](https://bpb-eu-w2.wpmucdn.com/blogs.reading.ac.uk/dist/3/187/files/2020/01/lia_mwp-1.png). This existential threat is true for every single person on Earth, no one will be able to totally avoid the turmoil this is causing. Heat waves, droughts, deep freezes, flooding, famine and diseases will all be inescapable. While [experts suggest](https://fortune.com/2024/04/10/united-nations-climate-chief-humanity-has-2-years-to-save-the-world/) there is time to curb the effects of climate change, there is still significant effort needed to ensure a future for the next generations. Thankfully a bright spot can be seen amongst the smog — the advancement of “green” energy sources and technologies. The ability to harness solar, wind, hydropower, or geothermal energy unlocks a paradigm that is rooted in clean, renewable power generation, and one that mitigates humanity’s impact on the planet. These sources of energy are exciting but they come with shared challenges. For example hydropower — like energy that comes from a dam or newer technology that harnesses the [kinetic energy of the tides and ocean currents](https://www.pnnl.gov/explainer-articles/tidal-energy#:~:text=What%20is%20tidal%20energy%3F,the%20water%20to%20move%20faster.) — requires significant infrastructure to move the energy captured from its point of origin to the consumer. As of 2023, the Hoover Dam was capable of generating [1,080 megawatts](https://www.statista.com/statistics/1360603/power-capacity-of-the-hoover-dam/) at any given moment. That is enough energy to power for roughly one million homes. However the dam is located in a relatively remote location (as are most dams), and Los Angeles which is the city that [consumes most of that energy (15%)](https://www.eia.gov/kids/for-teachers/field-trips/hoover-dam-hydroelectric-plant.php#:~:text=Nineteen%20percent%20of%20the%20electricity,that%20is%20270%20miles%20away.) is 270 miles away. Aside from proximity challenges, each renewable energy source faces the challenge of relying on non-human factors like the weather — solar energy requires sunshine, wind requires wind, etc. This means that renewable energy sources have a unique set of optimal weather conditions in which they can operate most efficiently.""")
@@ -64,10 +64,31 @@ with intro:
 
 # Data Gathering Tab
 with data:
-# elif selected == "Data Gathering":
-    st.title("Data Gathering")
-    # sub_tabs = st.selectbox("Data Gathering Details", ["P1", "P2", "P3"])
-    st.write("Content for Data Gathering will go here.")
+    # st.header("Data Prep & EDA")
+    sub_tabs = st.selectbox("Use dropdown for details:", ["Data Collection", "Data Cleaning", "Exploratory Data Analysis"])
+    if sub_tabs == "Data Collection":
+        st.write("""
+        #### DATA COLLECTION
+        In order to have a solid description of energy habits, a wide variety of data must be collected: annual consumption measurements for long term trends, time series consumption patterns, and weather history. 
+        While there are several different renewable energy sources that should be considered for this investigation, 
+        the sparsity of certain types like geothermal means this data is primarily made up of photovolatic (solar) and wind energy. 
+        The data used in this project was collected from the following sources: the [Open Power System Data (OPSD) project](https://open-power-system-data.org/), 
+        and [Renewable.ninjas](https://www.renewables.ninja/). \n \n
+        ##
+        ##### Open Power System Data (OPSD) Project
+        The OPSD project contains data about energy generation capacities and consumption for several European countries. 
+        The project collects, processes and documents publicly available data on various technologies, individual power plants as well as varying aggregated time series data for countries.
+        The data is availble in a couple different formats, but for the purposes of this project, the data was downloaded in CSV format. 
+        Specifically, the data used in this project were: the [Time series data](https://doi.org/10.25832/time_series/2020-10-06) which contains hourly data on electricity generation and consumption for several European countries, 
+        and the [National generation capacity](https://doi.org/10.25832/national_generation_capacity/2020-10-01) which has measurements for annual country consumption by technology types. \n 
+        """)
+    # st.write("Content for Data Gathering will go here.")
+
+    if sub_tabs == "Data Cleaning":
+        st.write("Content for Data Gathering Part 2 will go here.")
+
+    if sub_tabs == "Exploratory Data Analysis":
+        st.write("Content for Data Gathering Part 3 will go here.")
 
     # # Sample data
     # df = pd.DataFrame({
@@ -84,17 +105,10 @@ with data:
     # # Add some text to the Streamlit app
     # st.write("This is a bar chart showing the amount of different fruits.")
 
-# # Data Prep/EDA Tab
-# elif selected == "Data Prep/EDA":
-#     st.title("Data Prep/EDA")
-#     st.write("Content for Data Preparation and Exploratory Data Analysis will go here.")
+with modeling:
+    st.title("Modeling")
+    st.write("Coming Soon!")
 
-# # PCA Tab
-# elif selected == "PCA":
-#     st.title("PCA")
-#     st.write("Content for Placeholder 1 will go here.")
-
-# # ARM Tab
-# elif selected == "ARM":
-#     st.title("ARM")
-#     st.write("Content for Placeholder 2 will go here.")
+with conclusion:
+    st.title("Conclusion")
+    st.write("Coming Soon!")
