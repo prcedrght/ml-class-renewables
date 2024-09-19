@@ -7,22 +7,22 @@ ninja_api_base = "https://www.renewables.ninja/api/"
 
 s = req.Session()
 s.headers = {"Authorization": f"Token {ninja_token}"}
-# pv_url = ninja_api_base + "data/pv"
+pv_url = ninja_api_base + "data/pv"
 wind_url = ninja_api_base + 'data/wind'
 
 delay = 3600 / 50
 
 country_lat_lon = {
-    "Spain": (40.4168, -3.7038),
-    "Austria": (47.5162, 14.5501),
-    "Portugal": (39.3999, -8.2245),
-    "Albania": (41.1533, 20.1683),
-    "Netherlands": (52.1326, 5.2913),
-    "Italy": (41.8719, 12.5674),
-    "Romania": (45.9432, 24.9668),
-    "Czech Republic": (49.8175, 15.4730),
-    "Ireland": (53.1424, -7.6921),
-    "Belgium": (50.8503, 4.3517),
+    # "Spain": (40.4168, -3.7038),
+    # "Austria": (47.5162, 14.5501),
+    # "Portugal": (39.3999, -8.2245),
+    # "Albania": (41.1533, 20.1683),
+    # "Netherlands": (52.1326, 5.2913),
+    # "Italy": (41.8719, 12.5674),
+    # "Romania": (45.9432, 24.9668),
+    # "Czech Republic": (49.8175, 15.4730),
+    # "Ireland": (53.1424, -7.6921),
+    # "Belgium": (50.8503, 4.3517),
     "Switzerland": (46.8182, 8.2275),
     "Germany": (51.1657, 10.4515),
     "Great Britain": (55.3781, -3.4360),
@@ -89,9 +89,9 @@ for c, ll in country_lat_lon.items():
             print(f"PV Response Text: {pv_r.text}")
             continue
         print('loading into PV pickle')
-        pv_df.to_pickle('pv_data.pkl')
+        pv_df.to_pickle('pv_data3.pkl')
         
-        time.sleep(10)
+        time.sleep(delay)
 
         wind_args = {
             'lat': ll[0],
@@ -116,5 +116,5 @@ for c, ll in country_lat_lon.items():
             print(f"Wind Response Text: {wind_r.text}")
             continue
         print('loading into Wind pickle')
-        wind_df.to_pickle('wind_data.pkl')        
+        wind_df.to_pickle('wind_data3.pkl')        
         time.sleep(delay)
