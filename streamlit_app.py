@@ -115,7 +115,14 @@ with data:
     if sub_tabs == "Exploratory Data Analysis":
         st.write("""
         #### EXPLORATORY DATA ANALYSIS
+
         """)
+        st.image("./images/total_annual_capacity_by_country.png", use_column_width=True, caption='Total Annual Capacity')
+        st.image("./images/annual_capacity_by_country_and_technology.png", use_column_width=True, caption='Annual Capacity by Country & Technology')
+        st.image("./images/pv_hist.png", use_column_width=True, caption='Photovoltaic Histogram')
+        st.image("./images/pv_country_box.png", use_column_width=True, caption='Photovoltaic Boxplot by Country')
+        st.image("./images/wind_hist.png", use_column_width=True, caption='Wind Histogram')
+        st.image("./images/wind_country_box.png", use_column_width=True, caption='Wind Boxplot by Country')
 
     # # Sample data
     # df = pd.DataFrame({

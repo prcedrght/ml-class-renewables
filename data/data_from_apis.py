@@ -7,7 +7,7 @@ ninja_api_base = "https://www.renewables.ninja/api/"
 
 s = req.Session()
 s.headers = {"Authorization": f"Token {ninja_token}"}
-pv_url = ninja_api_base + "data/pv"
+# pv_url = ninja_api_base + "data/pv"
 wind_url = ninja_api_base + 'data/wind'
 
 delay = 3600 / 50
@@ -53,45 +53,45 @@ country_lat_lon = {
 
 years = [2018, 2019, 2020,]
 
-pv_df = pd.DataFrame()
+# pv_df = pd.DataFrame()
 wind_df = pd.DataFrame()
 
-i = 0
+i=0
 for c, ll in country_lat_lon.items():
     for y in years:
-        i += 1
+        i=+1
         print(i, c, y)
-        pv_args = {
-            "lat": ll[0],
-            "lon": ll[1],
-            "date_from": f"{y}-01-01",
-            "date_to": f"{y}-12-31",
-            "dataset": "merra2",
-            "capacity": 1.0,
-            "system_loss": 0.1,
-            "tracking": 0,
-            "tilt": 35,
-            "azim": 180,
-            "format": "json",
-            "raw": True,
-        }
+        # pv_args = {
+        #     "lat": ll[0],
+        #     "lon": ll[1],
+        #     "date_from": f"{y}-01-01",
+        #     "date_to": f"{y}-12-31",
+        #     "dataset": "merra2",
+        #     "capacity": 1.0,
+        #     "system_loss": 0.1,
+        #     "tracking": 0,
+        #     "tilt": 35,
+        #     "azim": 180,
+        #     "format": "json",
+        #     "raw": True,
+        # }
 
-        pv_r = s.get(pv_url, params=pv_args)
+        # pv_r = s.get(pv_url, params=pv_args)
 
-        # Check the status code and content of the responses
-        if pv_r.status_code == 200:
-            pv_txt = pv_r.json()
-            tmp_df = pd.DataFrame.from_dict(pv_txt['data'], orient='index')
-            tmp_df = tmp_df.assign(country=c)
-            pv_df = pd.concat([pv_df, tmp_df])
-        else:
-            print(f"PV Request failed with status code: {pv_r.status_code}")
-            print(f"PV Response Text: {pv_r.text}")
-            continue
-        print('loading into PV pickle')
-        pv_df.to_pickle('pv_data3.pkl')
+        # # Check the status code and content of the responses
+        # if pv_r.status_code == 200:
+        #     pv_txt = pv_r.json()
+        #     tmp_df = pd.DataFrame.from_dict(pv_txt['data'], orient='index')
+        #     tmp_df = tmp_df.assign(country=c)
+        #     pv_df = pd.concat([pv_df, tmp_df])
+        # else:
+        #     print(f"PV Request failed with status code: {pv_r.status_code}")
+        #     print(f"PV Response Text: {pv_r.text}")
+        #     continue
+        # print('loading into PV pickle')
+        # pv_df.to_pickle('pv_data3.pkl')
         
-        time.sleep(delay)
+        # time.sleep(delay)
 
         wind_args = {
             'lat': ll[0],
@@ -101,7 +101,8 @@ for c, ll in country_lat_lon.items():
             'capacity': 1.0,
             'height': 100,
             'turbine': 'Vestas V80 2000',
-            'format': 'json'
+            'format': 'json',
+            'raw': True,
         }
 
         wind_r = s.get(wind_url, params=wind_args)
@@ -116,5 +117,5 @@ for c, ll in country_lat_lon.items():
             print(f"Wind Response Text: {wind_r.text}")
             continue
         print('loading into Wind pickle')
-        wind_df.to_pickle('wind_data3.pkl')        
+        wind_df.to_pickle('wind_data4.pkl')        
         time.sleep(delay)
