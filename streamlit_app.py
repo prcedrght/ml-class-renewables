@@ -4,10 +4,10 @@ import base64
 # import plotly.express as px
 import pandas as pd
 
-national_capacity = pd.read_csv("./data/national_generation_capacity_stacked_filtered.csv")
-national_capacity_cleaned = national_capacity[['technology', 'year', 'country', 'capacity']].copy()
-time_data = pd.read_csv("./data/time_series_60min_singleindex_filtered.csv")
-long_time_data = pd.read_pickle("./data/long_pickle.pkl")
+# national_capacity = pd.read_csv("./data/national_generation_capacity_stacked_filtered.csv")
+# national_capacity_cleaned = national_capacity[['technology', 'year', 'country', 'capacity']].copy()
+# time_data = pd.read_csv("./data/time_series_60min_singleindex_filtered.csv")
+# long_time_data = pd.read_pickle("./data/long_pickle.pkl")
 
 
 # Function to read and encode the image
@@ -17,19 +17,19 @@ def get_base64_of_bin_file(bin_file):
     return base64.b64encode(data).decode()
 
 # Function to apply custom CSS
-def set_background(png_file, size='cover'):
-    bin_str = get_base64_of_bin_file(png_file)
-    css_str = f"""
-    <style>
-    .stApp {{
-        background-image: url("data:image/png;base64,{bin_str}");
-        background-size: {size};
-        background-repeat: no-repeat;
-        background-attachment: fixed;
-    }}
-    </style>
-    """
-    st.markdown(css_str, unsafe_allow_html=True)
+# def set_background(png_file, size='cover'):
+#     bin_str = get_base64_of_bin_file(png_file)
+#     css_str = f"""
+#     <style>
+#     .stApp {{
+#         background-image: url("data:image/png;base64,{bin_str}");
+#         background-size: {size};
+#         background-repeat: no-repeat;
+#         background-attachment: fixed;
+#     }}
+#     </style>
+#     """
+#     st.markdown(css_str, unsafe_allow_html=True)
 
 # set_background("./images/renewables_collage.png", )
 
@@ -102,14 +102,14 @@ with data:
         #### DATA CLEANING
         One of the data sets used in this project is an annual summary of energy capacity by country.
         """)
-        st.dataframe(national_capacity.iloc[0:5])
+        # st.dataframe(national_capacity.iloc[0:5])
         st.write("""However, there are several dimensions that are not required from this data set and thus removed.""")
-        st.dataframe(national_capacity_cleaned.iloc[0:5])
+        # st.dataframe(national_capacity_cleaned.iloc[0:5])
         st.write("""
         Another data set from the OPSD project is time series information that is in a wide format. Columns all share similar suffixes, e.g. `DE_soloar_profile` and `AT_solar_profile`, but the prefixes are the country codes. This data needs to be transformed into long format and have null records dropped.
         """)
-        st.dataframe(time_data.iloc[0:5])
-        st.dataframe(long_time_data)
+        # st.dataframe(time_data.iloc[0:5])
+        # st.dataframe(long_time_data)
 
 
     if sub_tabs == "Exploratory Data Analysis":
@@ -117,12 +117,12 @@ with data:
         #### EXPLORATORY DATA ANALYSIS
 
         """)
-        st.image("./images/total_annual_capacity_by_country.png", use_column_width=True, caption='Total Annual Capacity')
-        st.image("./images/annual_capacity_by_country_and_technology.png", use_column_width=True, caption='Annual Capacity by Country & Technology')
-        st.image("./images/pv_hist.png", use_column_width=True, caption='Photovoltaic Histogram')
-        st.image("./images/pv_country_box.png", use_column_width=True, caption='Photovoltaic Boxplot by Country')
-        st.image("./images/wind_hist.png", use_column_width=True, caption='Wind Histogram')
-        st.image("./images/wind_country_box.png", use_column_width=True, caption='Wind Boxplot by Country')
+        # st.image("./images/total_annual_capacity_by_country.png", use_column_width=True, caption='Total Annual Capacity')
+        # st.image("./images/annual_capacity_by_country_and_technology.png", use_column_width=True, caption='Annual Capacity by Country & Technology')
+        # st.image("./images/pv_hist.png", use_column_width=True, caption='Photovoltaic Histogram')
+        # st.image("./images/pv_country_box.png", use_column_width=True, caption='Photovoltaic Boxplot by Country')
+        # st.image("./images/wind_hist.png", use_column_width=True, caption='Wind Histogram')
+        # st.image("./images/wind_country_box.png", use_column_width=True, caption='Wind Boxplot by Country')
 
     # # Sample data
     # df = pd.DataFrame({

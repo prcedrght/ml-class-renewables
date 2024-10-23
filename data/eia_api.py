@@ -51,3 +51,80 @@ for page in range(total_pages):
 print("All Records Fetched")
 
 eia.to_feather('data/eia.feather')
+
+num_records = 7344
+
+total_pages = math.ceil(num_records/recs_per_request)
+
+offset = 0
+
+state_to_region = {
+    "California": "California",
+    "North Carolina": "Carolinas",
+    "South Carolina": "Carolinas",
+    "Iowa": "Central",
+    "Kansas": "Central",
+    "Minnesota": "Central",
+    "Missouri": "Central",
+    "Nebraska": "Central",
+    "North Dakota": "Central",
+    "South Dakota": "Central",
+    "Florida": "Florida",
+    "Delaware": "Mid-Atlantic",
+    "District of Columbia": "Mid-Atlantic",
+    "Maryland": "Mid-Atlantic",
+    "New Jersey": "Mid-Atlantic",
+    "Pennsylvania": "Mid-Atlantic",
+    "Virginia": "Mid-Atlantic",
+    "West Virginia": "Mid-Atlantic",
+    "Illinois": "Midwest",
+    "Indiana": "Midwest",
+    "Michigan": "Midwest",
+    "Ohio": "Midwest",
+    "Wisconsin": "Midwest",
+    "Connecticut": "New England",
+    "Maine": "New England",
+    "Massachusetts": "New England",
+    "New Hampshire": "New England",
+    "Rhode Island": "New England",
+    "Vermont": "New England",
+    "Idaho": "Northwest",
+    "Montana": "Northwest",
+    "Oregon": "Northwest",
+    "Washington": "Northwest",
+    "Wyoming": "Northwest",
+    "New York": "New York",
+    "Alabama": "Southeast",
+    "Georgia": "Southeast",
+    "Mississippi": "Southeast",
+    "Arizona": "Southwest",
+    "Colorado": "Southwest",
+    "Nevada": "Southwest",
+    "New Mexico": "Southwest",
+    "Utah": "Southwest",
+    "Tennessee": "Tennessee",
+    "Texas": "Texas",
+    "Oklahoma": "Central",
+    "Louisiana": "Southeast",
+    "Arkansas": "Central",
+    "Kentucky": "Central",
+}
+
+demand = pd.DataFrame()
+
+for page in range(total_pages):
+    # Update offset
+    offset = page * recs_per_request
+    if offset == 0:
+        demand_sales_url = f"https://api.eia.gov/v2/electricity/retail-sales/data/?api_key={EIA_API_KEY}&frequency=monthly&data[0]=customers&data[1]=price&data[2]=revenue&data[3]=sales&facets[stateid][]=AK&facets[stateid][]=AL&facets[stateid][]=AR&facets[stateid][]=AZ&facets[stateid][]=CA&facets[stateid][]=CO&facets[stateid][]=CT&facets[stateid][]=DC&facets[stateid][]=DE&facets[stateid][]=FL&facets[stateid][]=GA&facets[stateid][]=HI&facets[stateid][]=IA&facets[stateid][]=ID&facets[stateid][]=IL&facets[stateid][]=IN&facets[stateid][]=KS&facets[stateid][]=KY&facets[stateid][]=LA&facets[stateid][]=MA&facets[stateid][]=MD&facets[stateid][]=ME&facets[stateid][]=MI&facets[stateid][]=MN&facets[stateid][]=MO&facets[stateid][]=MS&facets[stateid][]=MT&facets[stateid][]=NC&facets[stateid][]=ND&facets[stateid][]=NE&facets[stateid][]=NH&facets[stateid][]=NJ&facets[stateid][]=NM&facets[stateid][]=NV&facets[stateid][]=NY&facets[stateid][]=OH&facets[stateid][]=OK&facets[stateid][]=OR&facets[stateid][]=PA&facets[stateid][]=RI&facets[stateid][]=SC&facets[stateid][]=SD&facets[stateid][]=TN&facets[stateid][]=TX&facets[stateid][]=UT&facets[stateid][]=VA&facets[stateid][]=VT&facets[stateid][]=WA&facets[stateid][]=WI&facets[stateid][]=WV&facets[stateid][]=WY&start=2022-01&end=2023-12&sort[0][column]=period&sort[0][direction]=desc&offset={offset}&length=5000"
+    else:
+        offset += 1
+        demand_sales_url = f"https://api.eia.gov/v2/electricity/retail-sales/data/?api_key={EIA_API_KEY}&frequency=monthly&data[0]=customers&data[1]=price&data[2]=revenue&data[3]=sales&facets[stateid][]=AK&facets[stateid][]=AL&facets[stateid][]=AR&facets[stateid][]=AZ&facets[stateid][]=CA&facets[stateid][]=CO&facets[stateid][]=CT&facets[stateid][]=DC&facets[stateid][]=DE&facets[stateid][]=FL&facets[stateid][]=GA&facets[stateid][]=HI&facets[stateid][]=IA&facets[stateid][]=ID&facets[stateid][]=IL&facets[stateid][]=IN&facets[stateid][]=KS&facets[stateid][]=KY&facets[stateid][]=LA&facets[stateid][]=MA&facets[stateid][]=MD&facets[stateid][]=ME&facets[stateid][]=MI&facets[stateid][]=MN&facets[stateid][]=MO&facets[stateid][]=MS&facets[stateid][]=MT&facets[stateid][]=NC&facets[stateid][]=ND&facets[stateid][]=NE&facets[stateid][]=NH&facets[stateid][]=NJ&facets[stateid][]=NM&facets[stateid][]=NV&facets[stateid][]=NY&facets[stateid][]=OH&facets[stateid][]=OK&facets[stateid][]=OR&facets[stateid][]=PA&facets[stateid][]=RI&facets[stateid][]=SC&facets[stateid][]=SD&facets[stateid][]=TN&facets[stateid][]=TX&facets[stateid][]=UT&facets[stateid][]=VA&facets[stateid][]=VT&facets[stateid][]=WA&facets[stateid][]=WI&facets[stateid][]=WV&facets[stateid][]=WY&start=2022-01&end=2023-12&sort[0][column]=period&sort[0][direction]=desc&offset={offset}&length=5000"
+    
+    demand_r = s.get(demand_sales_url)
+    data = demand_r.json()['response']['data']
+    tmp = pd.DataFrame.from_records(data)
+    tmp['eia_region'] = tmp['stateDescription'].map(state_to_region)
+    demand = pd.concat([demand, tmp])
+
+demand.to_feather('data/demand.feather')
