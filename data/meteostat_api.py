@@ -1,9 +1,12 @@
 import pandas as pd
 from datetime import datetime
-from meteostat import Point, Hourly
+from meteostat import Point, Daily
+import requests as req
+import io
+import time
 
-start = datetime(2022, 1, 1)
-end = datetime(2024, 1, 1)
+start = datetime(2020, 1, 1)
+end = datetime(2022, 12, 31)
 
 regions_coordinates = {
     "California": [
@@ -77,10 +80,50 @@ weather = pd.DataFrame()
 for loc, latlongs in regions_coordinates.items():
     for latlong in latlongs:
         point = Point(latlong[0], latlong[1])
-        data = Hourly(point, start, end)
+        data = Daily(point, start, end)
         tmp = pd.DataFrame(data.fetch().reset_index())
         tmp['coord'] = f"{latlong[0]},{latlong[1]}"
         tmp['location'] = loc
         weather = pd.concat([weather, tmp])
 
 weather.to_feather('data/weather.feather')
+############################################################################################################
+## NREL API
+
+def load_env_file(filepath):
+    with open(filepath) as f:
+        for line in f:
+            if line.strip() and not line.startswith('#'):
+                key, value = line.strip().split('=', 1)
+                os.environ[key] = value
+
+load_env_file('.env')
+NREL_API_KEY = os.getenv("NREL_API_KEY")
+if not NREL_API_KEY:
+    raise ValueError("API_KEY not found in environment variables")
+
+years = [2020, 2021, 2022]
+attributes = 'ghi,dhi,dni,solar_zenith_angle'
+# wkt = 'POINT(42.8864 -78.8784)'
+# names = '2020' #,2021,2022'
+interval = '60'
+email = 'priced@colorado.edu'
+s = req.Session()
+irradiance = pd.DataFrame()
+for year in years:
+    for loc, latlongs in regions_coordinates.items():
+        for latlong in latlongs:
+            lat, lon = latlong
+            url = f"https://developer.nrel.gov/api/nsrdb/v2/solar/psm3-5min-download.csv?api_key={NREL_API_KEY}&wkt=POINT({lon}+{lat})&attributes={attributes}&names={year}&email={email}&interval={interval}"
+            r = s.get(url)
+
+            try:
+                tmp = pd.read_csv(io.StringIO(r.text), skiprows=2)
+                tmp['eia_region'] = loc
+                tmp['coord'] = f"{lat},{lon}"
+                irradiance = pd.concat([irradiance, tmp])
+                time.sleep(1)
+            except pd.errors.EmptyDataError as e:
+                print(f"Empty Data for {loc} {lat} {lon} in {year}: {e}")
+                continue
+irradiance.to_feather('data/irradiance.feather')
