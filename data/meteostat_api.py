@@ -4,6 +4,7 @@ from meteostat import Point, Daily
 import requests as req
 import io
 import time
+import os
 
 start = datetime(2020, 1, 1)
 end = datetime(2022, 12, 31)
