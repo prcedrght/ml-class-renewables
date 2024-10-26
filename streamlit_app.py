@@ -242,8 +242,9 @@ for k in k_values:
     kmeans.fit(pc_3)
     score = silhouette_score(pc_3, kmeans.labels_)
     silhouette_scores.append(score)""")
-        
-
+        st.image("./images/silhouette_scores.png", use_column_width=True, caption='The Silhouette Score plot shows that 3 clusters is the best choice.')  
+        st.write("""Based on the plot a `k=3` is the best choice for this data. It is hard to determine exactly what the clusters are describing in this 3D space.""")
+        st.image("./images/kmeans_3d.png", use_column_width=True, caption='The 3D plot of the clusters shows that they are not easily interpretable.')
 with conclusion:
     st.title("Conclusion")
     st.write("Coming Soon!")
