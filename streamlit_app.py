@@ -3,13 +3,17 @@ import streamlit as st
 import base64
 # import plotly.express as px
 import pandas as pd
+# import nbformat
+
+# with open('./data/eda_notebook.ipynb') as f:
+#     notebook = nbformat.read(f, as_version=4)
 
 # national_capacity = pd.read_csv("./data/national_generation_capacity_stacked_filtered.csv")
 # national_capacity_cleaned = national_capacity[['technology', 'year', 'country', 'capacity']].copy()
 # time_data = pd.read_csv("./data/time_series_60min_singleindex_filtered.csv")
 # long_time_data = pd.read_pickle("./data/long_pickle.pkl")
 
-
+final_head = pd.read_feather("./data/final_head.feather")
 # Function to read and encode the image
 def get_base64_of_bin_file(bin_file):
     with open(bin_file, 'rb') as f:
@@ -76,53 +80,99 @@ with data:
     if sub_tabs == "Data Collection":
         st.write("""
         #### DATA COLLECTION
-        In order to have a solid description of energy habits, a wide variety of data must be collected: annual consumption measurements for long term trends, time series consumption patterns, and weather history. 
+        In order to have a solid description of energy habits and production, a wide variety of data must be collected: consumption measurements for long term trends, time series consumption patterns, and weather history. 
         While there are several different renewable energy sources that should be considered for this investigation, 
-        the sparsity of certain types like geothermal means this data is primarily made up of photovolatic (solar) and wind energy. 
-        The data used in this project was collected from the following sources: the [Open Power System Data (OPSD) project](https://open-power-system-data.org/), 
-        and [Renewable.ninjas](https://www.renewables.ninja/). \n \n
-        ##
-        ##### Open Power System Data (OPSD) Project
-        The OPSD project contains data about energy generation capacities and consumption for several European countries. 
-        The project collects, processes and documents publicly available data on various technologies, individual power plants as well as varying aggregated time series data for countries.
-        The data is availble in a couple different formats, but for the purposes of this project, the data was downloaded in CSV format. 
-        Specifically, the data used in this project were: the [Time series data](https://doi.org/10.25832/time_series/2020-10-06) which contains hourly data on electricity generation and consumption for several European countries, 
-        and the [National generation capacity](https://doi.org/10.25832/national_generation_capacity/2020-10-01) which has measurements for annual country consumption by technology types. \n
-        ##
-        ##### Renewables.ninja
-        Renewables.ninja is an API that provides solar and wind power models for researching the effects of integrating renewable technologies into smart grids.
-        The data is accessible via JSON formats by querying two different endpoints: solar (htttps://www.renewables.ninja/api/data/pv) and wind (https://www.renewables.ninja/api/data/wind).
-        By feeding the API latitude and longitude coordinates, along with the desired year and a few other parameters, the response will return hourly data of simulated electrical generation by the respective technologies along with weather information.
-        For example: ```curl -H 'Authorization: Token <your_token_here>' -X GET 'https://www.renewables.ninja/api/data/wind?&lat=56&lon=-3&date_from=2014-01-01&date_to=2014-02-28&capacity=1&dataset=merra2&height=100&turbine=Vestas+V80+2000&format=json'```
+        the sparsity of certain types like geothermal means this data is primarily made up of photovolatic, wind energy and hyrdo. 
+                 Additionally, to help bound the research to a broad but manageable size, data was bucketed into the various EIA regions.
+        The data used in this project was collected from the following sources: the [Meteostat](https://meteostat.net/en/), 
+                 [National Renewable Energy Laboratory](https://www.nrel.gov/research/data-tools.html), 
+                 and the [Energy Information Administration](https://www.eia.gov/). \n
+        ##### Meteostat
+        Meteostat is an open source platform that collects weather and climate data from all over the world. 
+                The data is available via a [Python Library](https://pypi.org/project/meteostat/) and offers a simple mechanism to download extensive data. 
+                By providing a series of geographic coordinations that mapped to the EIA regions, several meterological measurements are returned including but not limited to: average temperature, precipitation, wind speed and direction. \n
+        ##### National Renewable Energy Laboratory
+        The NREL is a government organization that provides a wealth of data on renewable energy sources. Because Meteostat does not have more recent data for solar irradiance, NREL was queried to pull in
+                 a physical model of information about how much sunlight is hitting the Earth's surface. 
+                 The [Physical Solar Model](https://developer.nrel.gov/docs/solar/nsrdb/psm3-5min-download/) was queried with same geographic coordinates and region mapping at over hour long intervals and summed for the day.\n
+        ##### Energy Information Administration
+        The EIA is a government organization that provides data on energy generation and consumption across all fuel types, providers and regions in the United States. 
+                 The data was used to pull in information about energy consumption and generation by region. Generation data is provided at the daily level, however consumption is reported on the monthly level, needing to bring all datasets up to that granularity.
+                 The [Electricity Data Browser](https://www.eia.gov/opendata/browser/electricity) has an excellent user friendly feature that allows you to generate the API call for your preferred method of downloading data.\n
         """)
     # st.write("Content for Data Gathering will go here.")
 
     if sub_tabs == "Data Cleaning":
+        eia_head = pd.read_feather("./data/eia_head.feather")
+        eia_head2 = pd.read_feather("./data/eia_head2.feather")
+        
         st.write("""
         #### DATA CLEANING
-        One of the data sets used in this project is an annual summary of energy capacity by country.
+        As mentioned earlier, all data needed to have some standard granularity and mapping keys to join them together. 
+                 Each dataset was resampled up to the `Month` granularity and either averaging or summing values where appropriate. For example:""")
+        st.code("""wind_monthly = region_climate.set_index('time').groupby(['location']).resample('MS')[['tavg','wspd','prcp']].mean().reset_index()""")
+        st.write("""The Meteostat data was in relatively good shape with only a couple of dimensions missing some or all values, those were dropped from the dataset.
+        The EIA dataset downloaded for Electricity Generation contained several fuel types that were not renewable -- such as coal and natural gas.
         """)
-        # st.dataframe(national_capacity.iloc[0:5])
-        st.write("""However, there are several dimensions that are not required from this data set and thus removed.""")
-        # st.dataframe(national_capacity_cleaned.iloc[0:5])
+        st.dataframe(eia_head)
+        st.write("""However, because the primary interest is in renewable energy, anything that wasn't Solar, Wind or Hydro was set aside to add in later for broader questions about meeting general demand and what percentage of renewables contribute.""")
+        st.dataframe(eia_head2)
         st.write("""
-        Another data set from the OPSD project is time series information that is in a wide format. Columns all share similar suffixes, e.g. `DE_soloar_profile` and `AT_solar_profile`, but the prefixes are the country codes. This data needs to be transformed into long format and have null records dropped.
+        Similarly, the Consumption or Demand data from EIA contained records of energy consumption by sector types. In this case, the research was concerned with the total consumption (provided in miilions of kWh), so it was limited to `all sectors`.
         """)
-        # st.dataframe(time_data.iloc[0:5])
-        # st.dataframe(long_time_data)
+        st.code("demand.sectorName.unique()")
+        st.text("""array(['commercial', 'all sectors', 'transportation', 'residential',
+       'other', 'industrial'], dtype=object)""")
+        st.write("""In the Irradiance data collected from NREL, solar measurements are offered in three distinct values: Global Horizontal Irradiance (GHI), Direct Horizontal Irradiance (DHI), and Direct Normal Irradiance (DNI).
+                 Each of these describe the amount of sunlight hitting the Earth's surface in different ways. GHI is the total amount of sunlight hitting the Earth's surface, DHI is the amount of sunlight that is diffused by the atmosphere, and DNI is the amount of sunlight that is hitting the Earth's surface directly.
+                    These values were summed up to provide a total amount of sunlight hitting the Earth's surface in a given day a measure called `poa` for [Plane of Array](https://pvpmc.sandia.gov/modeling-guide/1-weather-design-inputs/plane-of-array-poa-irradiance/). 
+                 Additionally, the date time was provided as separate columns, one for the year, month, day, and hour. These needed to be combined into a single datetime column for easier manipulation.""")
+        st.code("""irradiance['poa'] = irradiance.GHI + irradiance.DHI + irradiance.DNI""")
+        st.code("""rradiance['month_year']  = pd.to_datetime(irradiance[['Year', 'Month']].assign(day=1))""")
+        st.write("""The various data sources were all joined together on the `EIA Region` and `Month` columns to create a single dataset that could be used for analysis. 
+                 """)
+        st.code("""final_df = pd.merge(green_pivot, region_demand, left_on=['date_time', 'respondent-name'], right_on=['date_time', 'eia_region'], how='inner').drop(columns=['respondent-name'])
+final_df = pd.merge(final_df, wind_monthly, left_on=['date_time', 'eia_region'], right_on=['time', 'location'], how='inner').drop(columns=['location', 'time'])
+final_df = pd.merge(final_df, irradiance_resampled, on=['date_time', 'eia_region'], how='inner').drop(columns=['month_year'])
+final_df.head()""")
+        st.dataframe(final_head)
+        st.write("""As a final preprocessing step, the date column was encoded into two `sin` and `cos` cyclical features.
+                 This helps ensure the models know that December is closer to January than it is to June.""")
+        st.code("""from sklearn.preprocessing import FunctionTransformer
 
+def sin_transformer(period: int) -> FunctionTransformer:
+    return FunctionTransformer(lambda x: np.sin(x / period * 2 * np.pi))
+
+def cos_transformer(period: int) -> FunctionTransformer:
+    return FunctionTransformer(lambda x: np.cos(x / period * 2 * np.pi))
+
+def create_sine_cosine_doy_feature(df: pd.DataFrame, date_col: str) -> pd.DataFrame:
+    df['month'] = df[date_col].dt.month
+    df['month_sin'] = sin_transformer(12).fit_transform(df['month'])
+    df['month_cos'] = cos_transformer(12).fit_transform(df['month'])
+    return df""")
+        st.image('./images/sin_cos.png', use_column_width=True, caption='Sin and Cosine Encoding')
 
     if sub_tabs == "Exploratory Data Analysis":
         st.write("""
-        #### EXPLORATORY DATA ANALYSIS
-
-        """)
-        # st.image("./images/total_annual_capacity_by_country.png", use_column_width=True, caption='Total Annual Capacity')
-        # st.image("./images/annual_capacity_by_country_and_technology.png", use_column_width=True, caption='Annual Capacity by Country & Technology')
-        # st.image("./images/pv_hist.png", use_column_width=True, caption='Photovoltaic Histogram')
-        # st.image("./images/pv_country_box.png", use_column_width=True, caption='Photovoltaic Boxplot by Country')
-        # st.image("./images/wind_hist.png", use_column_width=True, caption='Wind Histogram')
-        # st.image("./images/wind_country_box.png", use_column_width=True, caption='Wind Boxplot by Country')
+        ## Renewable Energy Generation
+        To get a sense of how much Megawatt Hours of energy are generated by each renewable source, first it was important to understand the general distribution of these sources.""")
+        st.image("./images/MWh_Green_type.png", use_column_width=True, caption='In the US, Wind tends to produce more energy than Solar and Hyrdo.')
+        st.write("""However, these sources produce a smaller amount of energy comparable all fuel types.""")
+        st.image("./images/MWh_Fuel_type.png", use_column_width=True,)
+        st.write("""Of course, energy is not produced all at once, there are fluctations throughtout the year, so it is important to view the production trends over time. This will likely be an important feature in producing a model to optimize the smart grid.""")
+        st.image("./images/MWh_Green_type_time.png", use_column_width=True, caption='There is some clear seasonality to the amount of energy generated throughout the year.')
+        st.write("""## Energy Demand""")
+        st.write("""The same can be said for energy demand, there are fluctuations throughout the year, so it will be important to understand how these two features interact.
+                 """)
+        st.image("./images/MWh_demand2.png", use_column_width=True, caption='In addition to regional nuances like population size and energy habits, some regions have more demand than others because of the size of those regions.')
+        st.write("""## Climate & Irradiance""")
+        st.write("""As one might expect, climate data is highly seasonal as well. When examining temperature and irradiance data, there are clear peaks in the summer months and valleys throughout the winter months in the Northenr Hemisphere.""")
+        st.image("./images/avg_temp.png", use_column_width=True, caption='There are clear patterns that align with expectations. For example, the North West region has some of the coldest temperatures throughtout the year.')
+        st.image("./images/irradiance.png", use_column_width=True, caption='Irradiance is a measure of the amount of sunlight hitting the Earth\'s surface.')
+        st.write("""Unlike temperature and irradiance trends, wind speed and precipitation have less decernable seasonal patterns. This is likely due to the fact that these measurements are more dependent on local weather patterns and less on the time of year.""")
+        st.image("./images/avg_wind.png", use_column_width=True, caption='The Central region tends to have the highest average wind speeds, most likely because of the vast flat terrain which would not impede wind flow.')
+        st.image("./images/avg_rain.png", use_column_width=True, caption='In the winter months of 2022 and 2023, California experienced some record precipitation which can be observed here in this graph. Of course, what is not accounted for would be all of the snow that fell that winter as well.')
 
     # # Sample data
     # df = pd.DataFrame({
@@ -140,8 +190,59 @@ with data:
     # st.write("This is a bar chart showing the amount of different fruits.")
 
 with modeling:
-    st.title("Modeling")
-    st.write("Coming Soon!")
+    sub_tabs = st.selectbox("Use dropdown to explore different models:", ["PCA", "Clustering", "ARM"])
+    if sub_tabs == "PCA":
+        pca_head = pd.read_feather("./data/pca_head.feather")
+        st.title("PCA")
+        st.write("""
+        #### Principal Component Analysis
+        Principal Component Analysis (PCA) is a technique used to emphasize variation and bring out strong patterns in a dataset. 
+                 It simplifies the complexity of high-dimensionality data while preserving as much variabilty as possible. 
+                 At it's core, PCA changes the original varaiables through orthogonal linear transfromation into prinicpal components by creating a new set of uncorrelated varibles that are ordered by the amount variance captured.
+                 This allows the data to be visualized at a lower dimensionality and can be used to identify patterns in the data that may not be immediately obvious.
+                 """)
+        st.dataframe(final_head)
+        st.write("""Becuase the data contains dimension that are not quantitative, those must be removed before trasnforming it. The transformation returns an array of values.""")
+        st.dataframe(pca_head)
+        st.text("""array([[ 1.06487881e-01,  3.09447229e-01, -8.68151396e-02, ...,
+        -3.57169225e-01,  7.15290024e-01,  1.23094752e+00],
+       [-6.68569182e-04, -4.52746749e-01, -6.75608019e-01, ...,
+        -6.80527543e-01,  7.15290024e-01,  1.23094752e+00],
+       [-2.46356106e-01, -4.65672359e-01,  2.44937398e+00, ...,
+        -8.63650010e-01,  7.15290024e-01,  1.23094752e+00],
+       ...,
+       [-4.86251401e-01, -3.04727678e-01, -2.98561589e-01, ...,
+        -7.43367457e-01,  7.63596373e-03,  1.42028015e+00],
+       [ 2.89908831e-01, -4.66506269e-01, -6.74371801e-01, ...,
+        -1.44779499e+00,  7.63596373e-03,  1.42028015e+00],
+       [-5.59861125e-01, -2.73456043e-01,  4.91381587e-01, ...,
+        -8.79570660e-01,  7.63596373e-03,  1.42028015e+00]])""")
+        st.write("""After scaling the data, and fit transforming the data it can be plotted for both `n=2` and `n=3` components.""")
+        st.image("./images/pca_2.png",)
+        st.image("./images/pca_3.png",)
+        st.write("""Using a PCA of `n=2` components, only `~48%` of the variance is data can be explained.""")
+        st.text('array([0.29927026, 0.19274337])')
+        st.write("""While using PCA of `n=3` components, `~65%` of the variance is data can be explained.""")
+        st.text('array([0.29927026, 0.19274337, 0.15979564])')
+        st.write("""While this is a good start, in order to get to 95% of the explained variance, `n=7` components are required.""")
+        st.image('./images/cumulative_variance.png', use_column_width=True, caption='The cumulative variance plot shows that 95% of the variance is explained by 7 components.')
+        st.write("""The top three eigenvalues of this data are:""")
+        st.text('[2.69345609 1.73470563 1.4381734]')
+    
+    if sub_tabs == "Clustering":
+        st.title("Clustering")
+        st.write("""
+        The data preparation for clustering is the same as prepping for PCA using `n=3` components.
+        ### KMeans
+        First to determine how many clusters are appropriate, the Silhouette Scores were calculated for a range of cluster sizes.""")
+        st.code("""k_values = range(2, 11)
+silhouette_scores = []
+for k in k_values:
+    kmeans = KMeans(n_clusters=k, random_state=0)
+    kmeans.fit(pc_3)
+    score = silhouette_score(pc_3, kmeans.labels_)
+    silhouette_scores.append(score)""")
+        
 
 with conclusion:
     st.title("Conclusion")
