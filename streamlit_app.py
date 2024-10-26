@@ -224,7 +224,7 @@ with modeling:
         st.text('array([0.29927026, 0.19274337])')
         st.write("""While using PCA of `n=3` components, `~65%` of the variance is data can be explained.""")
         st.text('array([0.29927026, 0.19274337, 0.15979564])')
-        st.write("""While this is a good start, in order to get to 95% of the explained variance, `n=7` components are required.""")
+        st.write("""While this is a good start, in order to get to 95% of the explained variance, `n=6` components are required.""")
         st.image('./images/cumulative_variance.png', use_column_width=True, caption='The cumulative variance plot shows that 95% of the variance is explained by 7 components.')
         st.write("""The top three eigenvalues of this data are:""")
         st.text('[2.69345609 1.73470563 1.4381734]')
@@ -243,8 +243,17 @@ for k in k_values:
     score = silhouette_score(pc_3, kmeans.labels_)
     silhouette_scores.append(score)""")
         st.image("./images/silhouette_scores.png", use_column_width=True, caption='The Silhouette Score plot shows that 3 clusters is the best choice.')  
-        st.write("""Based on the plot a `k=3` is the best choice for this data. It is hard to determine exactly what the clusters are describing in this 3D space.""")
+        st.write("""Based on the plot a `k=3` is the best choice for this data. It is hard to determine exactly what the clusters are describing in this 3D space.
+                 With that said, the clusters do suggest that there is similar spread across the z-axis with varying concentration across the x and y axes. Given the PCA returned that 6 components are required to reach 95% of variance clustering with only 3 components may not be sufficient enough to determine a distinct pattern.""")
         st.image("./images/kmeans_3d.png", use_column_width=True, caption='The 3D plot of the clusters shows that they are not easily interpretable.')
+        st.write("""
+        ### Hierarchical Clustering
+                 This crashes my kernel every time I try to run it. I will need to investigate the root cause.
+        """)
+        st.write("""
+        ### DBSCAN
+        """)
+        st.image("./images/dbscan.png", use_column_width=True)
 with conclusion:
     st.title("Conclusion")
     st.write("Coming Soon!")
