@@ -190,6 +190,7 @@ def create_sine_cosine_doy_feature(df: pd.DataFrame, date_col: str) -> pd.DataFr
     # st.write("This is a bar chart showing the amount of different fruits.")
 
 with modeling:
+    st.write("""All code can be found in this [notebook](https://github.com/prcedrght/ml-class-renewables/blob/main/data/eda_notebook.ipynb).""")
     sub_tabs = st.selectbox("Use dropdown to explore different models:", ["PCA", "Clustering", "ARM"])
     if sub_tabs == "PCA":
         pca_head = pd.read_feather("./data/pca_head.feather")
@@ -248,12 +249,32 @@ for k in k_values:
         st.image("./images/kmeans_3d.png", use_column_width=True, caption='The 3D plot of the clusters shows that they are not easily interpretable.')
         st.write("""
         ### Hierarchical Clustering
-                 This crashes my kernel every time I try to run it. I will need to investigate the root cause.
+        The extensive dataset was too large to run a dendrogram on, so the data was sampled and then clustered. For this clustering, `scipy`, the `linkage` function, and the `ward` method were used to generate these insights. According to this method, the number of clusters that should be used is `n=2`.
+                 There is one leg that has significant distance compared to the others.
+                 Compared to KMeans, there is one less cluster to consider but both have a long tail of data that should be investigated further. This is most likely do to the fact that 3 components is not sufficient to cover all of the variance in the data. This should be expect considering climate data is highly complex and often not easily reduced to a few dimensions.
         """)
+        st.image("./images/dendrogram.png", use_column_width=True, caption='The Dendrogram plot shows that 2 clusters is the best choice.')
         st.write("""
         ### DBSCAN
+        Examining the DBSCAN plot, a significant amount of data points fall into one cluster, while the others are quite sparse and spread out. 
+                 In the 3D plot, it is difficult to ascertain exactly how the small clusters are formed.
         """)
         st.image("./images/dbscan.png", use_column_width=True)
+
+    if sub_tabs == "ARM":
+        st.title("Association Rule Mining")
+        st.write("""
+        Association Rule Mining is a technique used in data mining to discover interesting relationships, patterns, or associations among a set of items in large databases. It is commonly used in market basket analysis to identify sets of products that frequently co-occur in transactions.
+                 In ARM, there are rules. These associations are an implicit suggestion that if A occurs then B is also likely to occur.
+                 The Apriori Algorithm is used to find frequent itemsets and generate those association rules.
+                 In general, it generates a candidate itemsets while using a support threshold to filter out infrequent items.
+                 Then it prunes the itemsets that do meet the minimum support threshold.
+                 Next, it combines itemsets to generate new candidate itemsets.
+                 Then this process repeats until no more frequent itemsets can be found and generates the rules based on a minimum confidence threshold.
+                 The support of an itemset is the proportion of transactions in the database in which the itemset appears, while confidence is a measure of the reliability of an association rule. It is the proportion of transactions containing itemset A that also contain itemset B.
+                 """)
+        st.write("""### Data Prep""")
+        st.write("""Because the Apriori method requires transactional data, the data collect for this research has to be manipulated into a different form.""")
 with conclusion:
     st.title("Conclusion")
     st.write("Coming Soon!")
