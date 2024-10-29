@@ -57,6 +57,14 @@ with intro:
     st.image("./images/renewables_collage.png", use_column_width=True, caption='Renewable Energy as envisioned by GenAI')
     st.write("""Earth is in a crisis. Since the dawn of the industrial revolution modern society has become heavily dependent on the finite resources of fossil fuels which are a major contributor, if not the sole driver, behind modern [warming trends](https://bpb-eu-w2.wpmucdn.com/blogs.reading.ac.uk/dist/3/187/files/2020/01/lia_mwp-1.png). This existential threat is true for every single person on Earth, no one will be able to totally avoid the turmoil this is causing. Heat waves, droughts, deep freezes, flooding, famine and diseases will all be inescapable. While [experts suggest](https://fortune.com/2024/04/10/united-nations-climate-chief-humanity-has-2-years-to-save-the-world/) there is time to curb the effects of climate change, there is still significant effort needed to ensure a future for the next generations. Thankfully a bright spot can be seen amongst the smog — the advancement of “green” energy sources and technologies. The ability to harness solar, wind, hydropower, or geothermal energy unlocks a paradigm that is rooted in clean, renewable power generation, and one that mitigates humanity’s impact on the planet. These sources of energy are exciting but they come with shared challenges. For example hydropower — like energy that comes from a dam or newer technology that harnesses the [kinetic energy of the tides and ocean currents](https://www.pnnl.gov/explainer-articles/tidal-energy#:~:text=What%20is%20tidal%20energy%3F,the%20water%20to%20move%20faster.) — requires significant infrastructure to move the energy captured from its point of origin to the consumer. As of 2023, the Hoover Dam was capable of generating [1,080 megawatts](https://www.statista.com/statistics/1360603/power-capacity-of-the-hoover-dam/) at any given moment. That is enough energy to power for roughly one million homes. However the dam is located in a relatively remote location (as are most dams), and Los Angeles which is the city that [consumes most of that energy (15%)](https://www.eia.gov/kids/for-teachers/field-trips/hoover-dam-hydroelectric-plant.php#:~:text=Nineteen%20percent%20of%20the%20electricity,that%20is%20270%20miles%20away.) is 270 miles away. Aside from proximity challenges, each renewable energy source faces the challenge of relying on non-human factors like the weather — solar energy requires sunshine, wind requires wind, etc. This means that renewable energy sources have a unique set of optimal weather conditions in which they can operate most efficiently.""")
     st.write("""With the invention of the internet and interconnectedness of things, also came the ability to better understand and monitor energy consumption on the electric grid. This technology gave birth to the smart grid. A [smart grid relies on two-way communication](https://ieeexplore.ieee.org/document/8452969) between the power stations, batteries and the consumers to better utilize the energy available. For example, if energy is in high demand, and customers are connected to a smart grid, energy companies can adjust thermostat settings to manage consumption and ensure blackouts do not occur. There is complicated modeling involved in balancing the supply and demand, and renewable energy sources' notoriety for being sporadic make that more difficult. By examining the relationship between renewable energy efficiency and grid demand, new evidence could be used in modeling to better plan for grid stress and ease for storage.""")
+    st.image("./images/smart_grid.png", use_column_width=True, caption='Smart Grids as the future of energy consumption imagined by AI.')
+    st.write("""
+    Machine learning (ML) techniques offer a means to insights in tackling these challenges by providing advanced tools for analyzing and optimizing the complex dynamics of renewable energy and smart grids. 
+    While any given ML algorithms may not provide a clear answer, it can process vast amounts of data from various sources, such as weather forecasts, energy consumption patterns, and grid performance metrics, to predict energy production but more importantly allow for more questions and research to occur. 
+    Predictive capability enable more efficient integration of renewable energy into the grid, minimizing waste and enhancing reliability. 
+    Furthermore, ML can facilitate real-time decision-making and adaptive control strategies, allowing for dynamic adjustments to energy distribution and storage. 
+    By leveraging these technologies, we can create a more resilient and sustainable energy infrastructure that not only meets current demands but also adapts to future challenges, ultimately contributing to a more sustainable and environmentally friendly energy landscape.
+""")
     st.write("""
     #### 10 Questions to Answer:
     1. How well can renewable energy sources be integrated into meeting smart grid demands?
@@ -136,22 +144,6 @@ final_df = pd.merge(final_df, wind_monthly, left_on=['date_time', 'eia_region'],
 final_df = pd.merge(final_df, irradiance_resampled, on=['date_time', 'eia_region'], how='inner').drop(columns=['month_year'])
 final_df.head()""")
         st.dataframe(final_head)
-        st.write("""As a final preprocessing step, the date column was encoded into two `sin` and `cos` cyclical features.
-                 This helps ensure the models know that December is closer to January than it is to June.""")
-        st.code("""from sklearn.preprocessing import FunctionTransformer
-
-def sin_transformer(period: int) -> FunctionTransformer:
-    return FunctionTransformer(lambda x: np.sin(x / period * 2 * np.pi))
-
-def cos_transformer(period: int) -> FunctionTransformer:
-    return FunctionTransformer(lambda x: np.cos(x / period * 2 * np.pi))
-
-def create_sine_cosine_doy_feature(df: pd.DataFrame, date_col: str) -> pd.DataFrame:
-    df['month'] = df[date_col].dt.month
-    df['month_sin'] = sin_transformer(12).fit_transform(df['month'])
-    df['month_cos'] = cos_transformer(12).fit_transform(df['month'])
-    return df""")
-        st.image('./images/sin_cos.png', use_column_width=True, caption='Sin and Cosine Encoding')
 
     if sub_tabs == "Exploratory Data Analysis":
         st.write("""
@@ -203,8 +195,25 @@ with modeling:
                  This allows the data to be visualized at a lower dimensionality and can be used to identify patterns in the data that may not be immediately obvious.
                  """)
         st.dataframe(final_head)
-        st.write("""Becuase the data contains dimension that are not quantitative, those must be removed before trasnforming it. The transformation returns an array of values.""")
+        st.write("""Becuase the data contains dimension that are not quantitative, those must be removed before trasnforming it. Additionally, as a final preprocessing step, the date column was encoded into two `sin` and `cos` cyclical features.
+                 This helps ensure the models know that December is closer to January than it is to June, otherwise it would assume that `12` is bigger than `1` not next to each other.""")
+        st.code("""from sklearn.preprocessing import FunctionTransformer
+
+def sin_transformer(period: int) -> FunctionTransformer:
+    return FunctionTransformer(lambda x: np.sin(x / period * 2 * np.pi))
+
+def cos_transformer(period: int) -> FunctionTransformer:
+    return FunctionTransformer(lambda x: np.cos(x / period * 2 * np.pi))
+
+def create_sine_cosine_doy_feature(df: pd.DataFrame, date_col: str) -> pd.DataFrame:
+    df['month'] = df[date_col].dt.month
+    df['month_sin'] = sin_transformer(12).fit_transform(df['month'])
+    df['month_cos'] = cos_transformer(12).fit_transform(df['month'])
+    return df""")
+        st.image('./images/sin_cos.png', use_column_width=True, caption='Sin and Cosine Encoding')
+        st.write("""The final dataset used for PCA is shown below with the qualitative and target column removed, along with the date column encoded to represent the cyclical nature of time.""")
         st.dataframe(pca_head)
+        st.write("""The `StandardScaler()` returns an array with variables encoded between -1 and 1.""")
         st.text("""array([[ 1.06487881e-01,  3.09447229e-01, -8.68151396e-02, ...,
         -3.57169225e-01,  7.15290024e-01,  1.23094752e+00],
        [-6.68569182e-04, -4.52746749e-01, -6.75608019e-01, ...,
@@ -232,9 +241,18 @@ with modeling:
     
     if sub_tabs == "Clustering":
         st.title("Clustering")
+        st.write("""There are three clustering approaches that were used to determine patterns in the data: KMeans, Hierarchical Clustering, and DBSCAN.
+                 KMeans is a partitioned clustering method that groups data into `k` distinct, non-overlapping subsets designed to minimize the variance within each cluster and maximize the variance between them.
+                 Hierarchical Clustering builds a tree or dendrogram of clusters which can be cut at any point to determine the number of clusters. These can be created bottom-up (agglomerative) or top-down (divisive).
+                 Lastly, DBSCAN (Density-Based Spatial Clustering of Application with Noise) is an approach that groups points together that are close in proximity while marking low-density regions as outliers.""")
         st.write("""
-        The data preparation for clustering is the same as prepping for PCA using `n=3` components.
+                #### Data Prep
+                
+                For KMeans, data preparation for this clustering method is the same as prepping for PCA using `n=3` components. Quantitative and target columns were removed, and the date column was encoded into cyclical features.""")
+        st.write(""" 
         ### KMeans
+        
+        #### Silhouette Scores
         First to determine how many clusters are appropriate, the Silhouette Scores were calculated for a range of cluster sizes.""")
         st.code("""k_values = range(2, 11)
 silhouette_scores = []
@@ -243,26 +261,56 @@ for k in k_values:
     kmeans.fit(pc_3)
     score = silhouette_score(pc_3, kmeans.labels_)
     silhouette_scores.append(score)""")
-        st.image("./images/silhouette_scores.png", use_column_width=True, caption='The Silhouette Score plot shows that 3 clusters is the best choice.')  
-        st.write("""Based on the plot a `k=3` is the best choice for this data. It is hard to determine exactly what the clusters are describing in this 3D space.
-                 With that said, the clusters do suggest that there is similar spread across the z-axis with varying concentration across the x and y axes. Given the PCA returned that 6 components are required to reach 95% of variance clustering with only 3 components may not be sufficient enough to determine a distinct pattern.""")
-        st.image("./images/kmeans_3d.png", use_column_width=True, caption='The 3D plot of the clusters shows that they are not easily interpretable.')
+        st.image("./images/silhouette_scores.png", use_column_width=True, caption='The Silhouette Score plot highlighting 3 clusters is the best choice but should also look at 2 and 7 clusters.')  
+        st.write("""Based on the plot above there are three possible `k` values to try: 2, 3, and 7. These three values are the closest to 1 eventhough they are quite far from it.""")
+        st.write("""The centroids of the `k=2` clusters are as follows:""")
+        st.text("""[[ 1.33158106 -0.01165726 -0.01272154]
+ [-1.49717568  0.01310695  0.01430359]]""")
+        st.image("./images/kmeans2_3d.png", use_column_width=True, caption='Centroids for k=2 are extremely close together and near the origin.')
+        st.write("""The centroids of the `k=3` clusters are as follows:""")
+        st.text("""[[ 1.45665848  0.05309448 -0.12386596]
+ [-1.18628448 -2.85873459  0.8976224 ]
+ [-1.33431624  0.57160266 -0.06205635]]""")
+        st.image("./images/kmeans3_3d.png", use_column_width=True, caption='The 3D plot of the clusters shows that they are not easily interpretable except that there is clear concentration across the X & Y axes with dispersion across the Z.')
+        st.write("""The centroids of the `k=7` clusters are as follows:""")
+        st.text("""[[ 0.53972789  0.86615518  0.14313369]
+ [ 1.2560246  -0.21309264 -1.1325972 ]
+ [-1.2502602  -0.09196156 -0.93727056]
+ [ 2.16392606 -0.37512082  0.8736565 ]
+ [-1.23452401 -2.95152657  1.0130149 ]
+ [-2.16308385  0.89938247  0.66314643]
+ [ 0.09176567  2.0939616   2.20355834]]""")
+        st.image("./images/kmeans7_3d.png", use_column_width=True,)
+        st.write("""Because it is hard to distinguish the centroids in the 3D plot, the seven clusters were also plotted and colored by their respective clusters to help distinguish the groupings in the data.""")
+        st.image("./images/kmeans7_3d2.png", use_column_width=True)
         st.write("""
         ### Hierarchical Clustering
-        The extensive dataset was too large to run a dendrogram on, so the data was sampled and then clustered. For this clustering, `scipy`, the `linkage` function, and the `ward` method were used to generate these insights. According to this method, the number of clusters that should be used is `n=2`.
-                 There is one leg that has significant distance compared to the others.
-                 Compared to KMeans, there is one less cluster to consider but both have a long tail of data that should be investigated further. This is most likely do to the fact that 3 components is not sufficient to cover all of the variance in the data. This should be expect considering climate data is highly complex and often not easily reduced to a few dimensions.
+        This extensive dataset is too large to produce a dendrogram without more compute resources, so the data was sampled and then clustered. For this clustering, `scipy`, the `linkage` function, and the `ward` method were used to generate these insights. 
+                 According to this method, the most logical number of clusters that should be used is `n=2` because there is one leg that has significant distance compared to the others.
+                 But the dendrogram also suggests that 3, 5 or even 7 could be used as well. KMeans clustering is highly dependent on the placement of the centroids, and like the plots show, there is some overlap between these clusters.
+                 However, climate data could be considered hierarhcial in nature. For example, temperature could be independent on wind speed but temperature is also influenced by the amount of sunlight hitting the Earth.
         """)
-        st.image("./images/dendrogram.png", use_column_width=True, caption='The Dendrogram plot shows that 2 clusters is the best choice.')
+        st.image("./images/dendrogram.png", use_column_width=True, caption='The Dendrogram plot shows that there is a long tail of groupings.')
         st.write("""
         ### DBSCAN
-        Examining the DBSCAN plot, a significant amount of data points fall into one cluster, while the others are quite sparse and spread out. 
-                 In the 3D plot, it is difficult to ascertain exactly how the small clusters are formed.
+        Examining the DBSCAN plot, there is a large homogenous cluster with several other smaller clusters that are quite sparse.
+        Similar to the hierarchical clustering method, the DBSCAN method is suggesting that a higher order of clusters -- in this case `n=6` -- would be the most appropriate for this dataset.
         """)
         st.image("./images/dbscan.png", use_column_width=True)
+        st.write("""
+        ### Clustering Conclusions
+        
+        Because climate data is of high dimensionality, contains lots of noise, and often have complex interactions, it is not surprising that clustering methods did not produce clear patterns amongst the data.
+                 With that said, these methods have provided some insight into how one might group the data with regards to the Energy Demand targets. While it is simple enough to say that energy consumption may be high or low based on the weather, it is in fact a complex interaction and likely should be modeled as a continuous variable.
+        """)
+        
 
     if sub_tabs == "ARM":
+        tmp_arm_head = pd.read_feather("./data/tmp_arm_head.feather")
+        tmp_arm_head2 = pd.read_feather("./data/tmp_arm_head2.feather")
+        final_arm = pd.read_feather("./data/final_arm_df.feather")
         st.title("Association Rule Mining")
+        st.image("./images/arm_concept.jpeg", use_column_width=True)
         st.write("""
         Association Rule Mining is a technique used in data mining to discover interesting relationships, patterns, or associations among a set of items in large databases. It is commonly used in market basket analysis to identify sets of products that frequently co-occur in transactions.
                  In ARM, there are rules. These associations are an implicit suggestion that if A occurs then B is also likely to occur.
@@ -273,8 +321,114 @@ for k in k_values:
                  Then this process repeats until no more frequent itemsets can be found and generates the rules based on a minimum confidence threshold.
                  The support of an itemset is the proportion of transactions in the database in which the itemset appears, while confidence is a measure of the reliability of an association rule. It is the proportion of transactions containing itemset A that also contain itemset B.
                  """)
+        st.image("./images/arm_formulas.png", use_column_width=True, caption='Apriori Concepts borrowed from https://medium.com/@nrmnbabalik/apriori-algorithm-in-recommendation-systems-782e7cd83440')
         st.write("""### Data Prep""")
-        st.write("""Because the Apriori method requires transactional data, the data collect for this research has to be manipulated into a different form.""")
+        st.write("""Because the Apriori method requires transactional data, and the climate-energy data set is in record format, it has to be manipulated into a different form. Additionally, because the majority of variables are quantiative in nature, those needed to be transformed into some discrete format.
+                 As a reminder, the dataset used in this research looks like this:""")
+        st.dataframe(final_head)
+        st.write("""From here, the quantiative needed to be discretized using the following code:""")
+        st.code("""arm_df['month'] = arm_df.month_year.dt.month
+arm_df['year'] = arm_df.month_year.dt.year
+arm_df['hydro_bin'] = pd.cut(arm_df.Hydro, bins=7, labels=['Hydro_Low', 'Hydro_Low-Medium', 'Hydro_Medium', 'Hydro_Medium-High', 'Hydro_High', 'Hydro_Very High', 'Hydro_Extremely High'])
+arm_df['solar_bin'] = pd.cut(arm_df.Solar, bins=7, labels=['Solar_Low', 'Solar_Low-Medium', 'Solar_Medium', 'Solar_Medium-High', 'Solar_High', 'Solar_Very High', 'Solar_Extremely High'])
+arm_df['wind_bin'] = pd.cut(arm_df.Wind, bins=7, labels=['Wind_Low', 'Wind_Low-Medium', 'Wind_Medium', 'Wind_Medium-High', 'Wind_High', 'Wind_Very High', 'Wind_Extremely High'])
+arm_df['tavg_bin'] = pd.cut(arm_df.tavg, bins=7, labels=['Tavg_Low', 'Tavg_Low-Medium', 'Tavg_Medium', 'Tavg_Medium-High', 'Tavg_High', 'Tavg_Very High', 'Tavg_Extremely High'])
+arm_df['wspd_bin'] = pd.cut(arm_df.wspd, bins=7, labels=['Wspd_Low', 'Wspd_Low-Medium', 'Wspd_Medium', 'Wspd_Medium-High', 'Wspd_High', 'Wspd_Very High', 'Wspd_Extremely High'])
+arm_df['prcp_bin'] = pd.cut(arm_df.prcp, bins=7, labels=['Prcp_Low', 'Prcp_Low-Medium', 'Prcp_Medium', 'Prcp_Medium-High', 'Prcp_High', 'Prcp_Very High', 'Prcp_Extremely High'])
+arm_df['poa_bin'] = pd.cut(arm_df.poa, bins=7, labels=['POA_Low', 'POA_Low-Medium', 'POA_Medium', 'POA_Medium-High', 'POA_High', 'POA_Very High', 'POA_Extremely High'])
+arm_df = arm_df.drop(columns=['month_year', 'Hydro', 'Solar', 'Wind', 'tavg', 'wspd', 'prcp', 'poa'])""")
+        st.write("""This discretized data looks like the follwoing:""")
+        st.dataframe(tmp_arm_head)
+        st.write("""Because Python does not handle transactional data well for Apriori algorithms, the data has to be transformed one last time where each item is encoded as its own dimension.""")
+        st.dataframe(final_arm)
+        st.write("""### Results""")
+        st.write("""
+#### Top 15 Rules for Support
+""")
+        st.text("""support                          itemsets
+0   0.831979                       (Solar_Low)
+1   0.688196                       (Hydro_Low)
+2   0.685299                        (Wind_Low)
+3   0.573511             (Solar_Low, Wind_Low)
+4   0.569347            (Solar_Low, Hydro_Low)
+5   0.477677             (Hydro_Low, Wind_Low)
+6   0.391756  (Solar_Low, Hydro_Low, Wind_Low)
+7   0.352286                        (Prcp_Low)
+8   0.326287                     (Wspd_Medium)
+9   0.307481                     (Prcp_Medium)
+10  0.303255                 (Wspd_Low-Medium)
+11  0.279351          (Solar_Low, Prcp_Medium)
+12  0.266638             (Solar_Low, Prcp_Low)
+13  0.263389          (Solar_Low, Wspd_Medium)
+14  0.261505           (Wspd_Medium, Wind_Low)""")
+        st.write("""
+#### Top 15 Rules for Confidence
+""")
+        st.text("""antecedents             consequents  confidence
+0            (Prcp_Medium)             (Solar_Low)    0.908516
+1               (Wind_Low)             (Solar_Low)    0.836877
+2              (Hydro_Low)             (Solar_Low)    0.827303
+3    (Hydro_Low, Wind_Low)             (Solar_Low)    0.820127
+4            (Wspd_Medium)             (Solar_Low)    0.807232
+5            (Wspd_Medium)              (Wind_Low)    0.801457
+6               (Prcp_Low)             (Solar_Low)    0.756879
+7               (Wind_Low)             (Hydro_Low)    0.697034
+8              (Hydro_Low)              (Wind_Low)    0.694100
+9              (Solar_Low)              (Wind_Low)    0.689334
+10  (Solar_Low, Hydro_Low)              (Wind_Low)    0.688079
+11             (Solar_Low)             (Hydro_Low)    0.684329
+12   (Solar_Low, Wind_Low)             (Hydro_Low)    0.683083
+13              (Wind_Low)  (Solar_Low, Hydro_Low)    0.571656
+14             (Hydro_Low)   (Solar_Low, Wind_Low)    0.569250""")
+        st.write("""
+#### Top 15 Rules for Lift
+""")
+        st.text("""
+               antecedents             consequents  confidence   support  \\
+0            (Wspd_Medium)              (Wind_Low)    0.801457  0.261505   
+1            (Prcp_Medium)             (Solar_Low)    0.908516  0.279351   
+2              (Hydro_Low)              (Wind_Low)    0.694100  0.477677   
+3               (Wind_Low)             (Hydro_Low)    0.697034  0.477677   
+4              (Solar_Low)              (Wind_Low)    0.689334  0.573511   
+5               (Wind_Low)             (Solar_Low)    0.836877  0.573511   
+6   (Solar_Low, Hydro_Low)              (Wind_Low)    0.688079  0.391756   
+7               (Wind_Low)  (Solar_Low, Hydro_Low)    0.571656  0.391756   
+8              (Hydro_Low)             (Solar_Low)    0.827303  0.569347   
+9              (Solar_Low)             (Hydro_Low)    0.684329  0.569347   
+10   (Solar_Low, Wind_Low)             (Hydro_Low)    0.683083  0.391756   
+11             (Hydro_Low)   (Solar_Low, Wind_Low)    0.569250  0.391756   
+12   (Hydro_Low, Wind_Low)             (Solar_Low)    0.820127  0.391756   
+13           (Wspd_Medium)             (Solar_Low)    0.807232  0.263389   
+14              (Prcp_Low)             (Solar_Low)    0.756879  0.266638   
+
+        lift  
+0   1.169499  
+1   1.091994  
+2   1.012841  
+3   1.012841  
+4   1.005887  
+5   1.005887  
+6   1.004056  
+7   1.004056  
+8   0.994380  
+9   0.994380  
+10  0.992570  
+11  0.992570  
+12  0.985755  
+13  0.970255  
+14  0.909733  
+""")
+        st.write("""
+A minimum support threshold of `0.25` and confidence threshold of `0.5` were chosen because of the complexity, and likely sparseness of relationships between the variables. 
+The results above seems to suggest this as well where rules tend to occur infrequently but when the antecedent occurs it is frequently found with its consequent. 
+For example, looking at the top rule by `Lift`, there is a strong association between Medium Wind Speed `Wspd_Medium` and Low Wind Generation `Wind_Low`. 
+While this rule occurs only a little more than one quarter of the time in the data, eight out of those 10 times they'll occur together.
+However, there are only 7 rules that have a lift greater than 1 which means more often than not there is no association for the others.
+### Conclusion
+All in all, the ARM method proved useful in identifying some possible explanation to what other models are picking up on in terms of relationships between the variables.
+It would seem energy generation between different months of the year are more closely related than the weather, perhaps this is because of the seasonality to generation adn weather.
+""")
+        st.image("./images/association_rules.png", use_column_width=True, caption='The Association Rules plot shows that there are only 7 rules amongst 6 unique items that have a strong likelihood of occuring together.')
 with conclusion:
     st.title("Conclusion")
     st.write("Coming Soon!")
