@@ -426,7 +426,7 @@ While this rule occurs only a little more than one quarter of the time in the da
 However, there are only 7 rules that have a lift greater than 1 which means more often than not there is no association for the others.
 ### Conclusion
 All in all, the ARM method proved useful in identifying some possible explanation to what other models are picking up on in terms of relationships between the variables.
-It would seem energy generation between different months of the year are more closely related than the weather, perhaps this is because of the seasonality to generation adn weather.
+It would seem energy generation between different months of the year are more closely related than the weather, perhaps this is because of the seasonality to generation and weather.
 """)
         st.image("./images/association_rules.png", use_column_width=True, caption='The Association Rules plot shows that there are only 7 rules amongst 6 unique items that have a strong likelihood of occuring together.')
 with conclusion:
