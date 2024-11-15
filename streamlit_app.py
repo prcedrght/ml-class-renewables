@@ -200,9 +200,10 @@ final_df.head()""")
     # st.write("This is a bar chart showing the amount of different fruits.")
 
 with modeling:
-    st.write("""All code can be found in this [notebook](https://github.com/prcedrght/ml-class-renewables/blob/main/data/eda_notebook.ipynb).""")
-    sub_tabs = st.selectbox("Use dropdown to explore different models:", ["PCA", "Clustering", "ARM", "Naïve Bayes"])
+    
+    sub_tabs = st.selectbox("Use dropdown to explore different models:", ["PCA", "Clustering", "ARM", "Naïve Bayes", 'Decision Trees', 'Regression'])
     if sub_tabs == "PCA":
+        st.write("""All code can be found in this [notebook](https://github.com/prcedrght/ml-class-renewables/blob/main/data/eda_notebook.ipynb).""")
         pca_head = pd.read_feather("./data/pca_head.feather")
         st.title("PCA")
         st.write("""
@@ -258,6 +259,7 @@ def create_sine_cosine_doy_feature(df: pd.DataFrame, date_col: str) -> pd.DataFr
         st.text('[2.69345609 1.73470563 1.4381734]')
     
     if sub_tabs == "Clustering":
+        st.write("""All code can be found in this [notebook](https://github.com/prcedrght/ml-class-renewables/blob/main/data/eda_notebook.ipynb).""")
         st.title("Clustering")
         st.write("""There are three clustering approaches that were used to determine patterns in the data: KMeans, Hierarchical Clustering, and DBSCAN.
                  KMeans is a partitioned clustering method that groups data into `k` distinct, non-overlapping subsets designed to minimize the variance within each cluster and maximize the variance between them.
@@ -324,6 +326,7 @@ for k in k_values:
         
 
     if sub_tabs == "ARM":
+        st.write("""All code can be found in this [notebook](https://github.com/prcedrght/ml-class-renewables/blob/main/data/eda_notebook.ipynb).""")
         tmp_arm_head = pd.read_feather("./data/tmp_arm_head.feather")
         tmp_arm_head2 = pd.read_feather("./data/tmp_arm_head2.feather")
         final_arm = pd.read_feather("./data/final_arm_df.feather")
@@ -448,6 +451,14 @@ It would seem energy generation between different months of the year are more cl
 """)
         st.image("./images/association_rules.png", use_column_width=True, caption='The Association Rules plot shows that there are only 7 rules amongst 6 unique items that have a strong likelihood of occuring together.')
     if sub_tabs == "Naïve Bayes":
+        st.write("""All code can be found in this [notebook](https://github.com/prcedrght/ml-class-renewables/blob/main/data/supervised_learning.ipynb).""")
+        multinomial_nb_train = pd.read_feather("./data/mnb_train_df.feather")
+        multinomial_nb_test = pd.read_feather("./data/mnb_test_df.feather")
+        gaussian_train = pd.read_feather("./data/gnb_x_train.feather")
+        gaussian_test = pd.read_feather("./data/gnb_x_test.feather")
+        bernoulli_train = pd.read_feather("./data/bnb_x_train.feather")
+        bernoulli_test = pd.read_feather("./data/bnb_x_test.feather")
+        final_head = pd.read_feather("./data/final_head.feather")
         st.title("Naïve Bayes")
         st.write("""
         Naïve Bayes is a classification technique based on Bayes' Theorem with an assumption of independence between predictors. 
@@ -455,25 +466,251 @@ It would seem energy generation between different months of the year are more cl
         Even if these features depend on each other or upon the existence of the other features, all of these properties contribute to the probability of the class label.
         Naïve Bayes is especically useful for several reasons, it is simple, fast, can be used for binary or multiclass classification, and offers interpretability.
         Because the underlying distribution of the features determines whether a Gaussian, Multinomial, Bernoulli or Categorical model is used, the data needs to be of the same feature distribution.
+        For example, if the data had discrete counts in the features then a Multinomial model would be most appropriate but if those features were binary then a Bernoulli model would be used.
         With that said, there are ways around this by using a custom model, feature transformation or separate models and combining them.
+        This section will focus on three types of Naïve Bayes models: Multinomial, Gaussian, and Bernoulli.
         """)
         st.write("""
-        ### Data Prep
+        ## Data Prep
         #### Multinomial Naïve Bayes
-        In order to prepare the data for 
+        In order to prepare the data for this particular model, the continuous variables such as `tavg`, `wspd`, `prcp`, and `poa` were discretized into 5 bins each.
+        The categorical variables (`month` and `eia_region`) were encoded into dummy variables such that each unique value of those cateogries have their own column.
         """)
+        st.dataframe(final_head)
+        st.write("""The data above was transformed into below and split into training and testing sets. It is vital that these training and testing sets are separate from each other because using training data in your testing set would result in artifically higher accuracy scores.""")
+        st.write("Mulitnomial Training Set")
+        st.dataframe(multinomial_nb_train)
+        st.write("Mulitnomial Testing Set")
+        st.dataframe(multinomial_nb_test)
         st.write("""
-        ### Results
-        The model was trained and tested on the data with the following results:
-        """)
+        #### Gaussian Naïve Bayes
+        Similarly, the original data was prepared for a Gaussian classifier by encoding the categorical variables and splitting the data into training and testing sets. 
+        Continuous variables did not need to be transformed other than being normalized because Gaussian models presume those variables are normally distributed. This prep created sparse matricies to run the model on.""")
+        st.write("Gaussian Training Set")
+        st.dataframe(gaussian_train)
+        st.write("Gaussian Testing Set")
+        st.dataframe(gaussian_test)
         st.write("""
-        #### Confusion Matrix
-        """)
-        st.image("./images/nb_confusion_matrix.png", use_column_width=True, caption='The Confusion Matrix shows that the model is correctly predicting high demand 75% of the time.')
+        #### Bernoulli Naïve Bayes
+        For the final NB model, the data was prepared by encoding the categorical variables, binarizing the continuous variables, and splitting the data into training and testing sets. This prep created sparse matricies to run the model on.""")
+        st.write("Bernoulli Training Set")
+        st.dataframe(bernoulli_train)
+        st.write("Bernoulli Testing Set")
+        st.dataframe(bernoulli_test)
         st.write("""
-        #### Classification Report
+        ## Results
+        #### Multinomial Naïve Bayes
+        This model returned an accuracy score of `~0.63` on the testing set. In particular, the model was relatively successful at predicting the `High` and `Low` demand labels.
         """)
+        st.text("""
+        Classification Report:
+              precision    recall  f1-score   support
 
+        High       0.75      0.71      0.73      7421
+         Low       0.68      0.74      0.71      6678
+ Medium High       0.56      0.54      0.55      7400
+  Medium Low       0.51      0.52      0.52      6897
+
+    accuracy                           0.63     28396
+   macro avg       0.63      0.63      0.63     28396
+weighted avg       0.63      0.63      0.63     28396
+""")
+        st.image("./images/mnb_confusion_matrix.png", use_column_width=True, caption='The Confusion Matrix shows that the model is most successful at predicting High energy demand.')
+        st.write("""
+        #### Gaussian Naïve Bayes
+        This model was a poor performer with only an accuracy of `~0.48` on the testing set. When examing the confusion matrix, it becomes clear why. The training set in this model lack sufficient data for `Medium High` and `Medium Low` demand labels.""")
+        st.text("""
+        Classification Report:
+              precision    recall  f1-score   support
+
+        High       0.51      0.98      0.67      7421
+         Low       0.47      0.97      0.63      6678
+ Medium High       0.00      0.00      0.00      7400
+  Medium Low       0.00      0.00      0.00      6897
+
+    accuracy                           0.48     28396
+   macro avg       0.24      0.49      0.32     28396
+weighted avg       0.24      0.48      0.32     28396
+        """)
+        st.image("./images/gnb_confusion_matrix.png", use_column_width=True, caption='The Confusion Matrix shows that the model is not predicting Medium High and Medium Low energy demand.')
+        st.write("""
+        #### Bernoulli Naïve Bayes
+        This model was the highest performer of the chose Naïve Bayes models with an accuracy of `~0.70` on the testing set. 
+        Not only did it outperform the Multinomial model by a couple points, but it also managed to bring up the `f1-score` for the `Medium High` and `Medium Low` demand labels.""")
+        st.text("""
+        Classification Report:
+              precision    recall  f1-score   support
+
+        High       0.79      0.78      0.79      7421
+         Low       0.76      0.76      0.76      6678
+ Medium High       0.65      0.63      0.64      7400
+  Medium Low       0.60      0.63      0.61      6897
+
+    accuracy                           0.70     28396
+   macro avg       0.70      0.70      0.70     28396
+weighted avg       0.70      0.70      0.70     28396""")
+        st.image("./images/bnb_confusion_matrix.png", use_column_width=True, caption='The Confusion Matrix shows that the Bernoullli model was more accurate for all of the given demand labels.')
+        st.write("""
+        ## Conclusion
+        These various Naïve Bayes models performed moderately well given the features used. This means that these features have some predictive power in determining the energy demand.
+        This passes a logical sanity check considering features like temperature should have a direct relationship with energy demand. For example, when it is hotter outside, people will be using more energy to cool their homes and offices.
+        To improve on these models, more work can be done to reduce the colinearity between certain features, as well as ensuring a more appropriate distribution of labels end up in the training sets.
+        """)
+    if sub_tabs == 'Decision Trees':
+        dt_test = pd.read_feather("./data/dt_x_test.feather")
+        dt_train = pd.read_feather("./data/dt_x_train.feather")
+        st.write("""All code can be found in this [notebook](https://github.com/prcedrght/ml-class-renewables/blob/main/data/supervised_learning.ipynb).""")
+        st.title("Decision Trees")
+        st.image("./images/tree_diagram_ex.png", use_column_width=True, caption='A simple decision tree diagram borrowed from https://insidelearningmachines.com/interpret_decision_trees/')    
+        st.write("""
+        Decision Trees are a non-parametric supervised learning method used for classification and regression. 
+        The goal is to create a model that predicts the value of a target variable by learning simple decision rules inferred from the data features.
+        They work by splitting the data into subsets based on the value of input features, creating a tree-like model of decisions. 
+        Each internal node of the tree represents a decision based on an attribute, each branch represents the outcome of the decision, and each leaf node represents a class label (in classification) or a continuous value (in regression).
+        The deeper the tree, the more complex the decision rules. This means that the model is more likely to overfit the data because 
+                 it is generally possible to create an infinite number of trees. There are many possible ways
+                  to split the data at each node, 
+                 especially if continuous attributes are involved, and ach split can be based on different thresholds or combinations of features. 
+                 Furthermore, even slight variations in the order of splits or the depth of the tree can lead to different tree structures. 
+                 This flexibility, while powerful, is what can lead to overfitting if not properly controlled through techniques like pruning or setting a maximum tree depth.""")
+        st.image("./images/CART_tree_titanic_survivors.png", use_column_width=True, caption='A decision tree diagram made with the Titanic Survivors dataset.')
+        st.write("""### GINI, Entropy, and Information Gain
+        \n
+Gini Impurity, Entropy and Information gain are metrics used to evaluate how "goodness" of a split in a Decision Tree. 
+"Goodness" in this sense means how well the model is splitting in each node to maximize the separation of class labels.
+Gini Impurity measures the probablity that a randomly chosen element from the set would be incorrectly labeled 
+if it was randomly labeled according to the distribution of labels in the subset.""")
+        st.latex(r"""
+        Gini = 1 - \sum_{i=1}^{n} p_i^2""")
+        st.latex(r"""
+        Entropy = -\sum_{i=1}^{n} p_i \log_2(p_i)""")
+        st.latex(r"""
+        \text{Information Gain}(D, A) = \text{Entropy}(D) - \sum_{v \in \text{Values}(A)} \frac{|D_v|}{|D|} \text{Entropy}(D_v)
+                 """)
+        st.write("""
+        #### Consider this simple example regarding whether a child will play outside or not based on the weather conditions:
+                 \n
+        | Weather | Play |
+        |---------|------|
+        | Sunny   | Yes  |
+        | Rainy   | No   |
+        | Overcast| Yes  |
+        | Sunny   | No   |
+        | Overcast| No   |
+                 \n
+        Calculating the Entropy for the entire dataset:             
+""")
+        st.latex(r"""
+        ( p(\text{Yes}) = \frac{2}{5} ) \\~\\
+        ( p(\text{No}) = \frac{3}{5} ) \\~\\
+        Entropy = -\left( \frac{2}{5} \log_2 \frac{2}{5} + \frac{3}{5} \log_2 \frac{3}{5} \right) =0.971
+""")
+        st.write("""Calculate Entropy for each attribute:""")
+        st.latex(r"""
+        \text{Sunny} = -\left( \frac{1}{2} \log_2 \frac{1}{2} + \frac{1}{2} \log_2 \frac{1}{2} \right) = 1 \\~\\
+        \text{Rainy} = -\left(0 \log_2 0 + 1 \log_2 1\right) = 0 \\~\\
+        \text{Overcast}) = -\left( \frac{1}{2} \log_2 \frac{1}{2} + \frac{1}{2} \log_2 \frac{1}{2} \right) = 1
+""")    
+        st.write("""Calculate Information Gain (IG) for each attribute:""")
+        st.latex(r"""
+        IG(Entropy, \text{Weather}) = 0.971 - \left( \frac{2}{5} \times 1 + \frac{1}{5} \times 0 + \frac{2}{5} \times 1 \right) \\~\\
+        IG(Entropy, \text{Weather}) = 0.971 - 0.8 = 0.171
+""")
+        st.write("""
+""")
+        st.write("""-----""")
+        st.write("""
+        ## Data Prep
+        To prepare the data for a decision tree, the categorical variables were encoded into dummy variables, 
+                 the continuous variables were left alone and the data was split into training and testing sets.
+        One must separate out these sets to ensure the model is not artifically accurate because it has seen the data before.
+        """)
+        st.write("Decision Tree Training Set")
+        st.dataframe(dt_train)
+        st.write("Decision Tree Testing Set") 
+        st.dataframe(dt_test)
+        st.write("""
+        ## Results
+        An unrestricted model, where no hyperparameters are set, was used to fit the data. 
+                 So when examining the confusion matrix, it should come to no surprise that it has perfect accuracy.
+                 The model took as many steps as need to get to pure terminal nodes.
+        """)
+        st.image("./images/dt_confusion_matrix.png", use_column_width=True, caption='The Confusion Matrix shows that the Decision Tree model is 100% accurate on the training set.')
+        st.write('')
+        st.image("./images/dt_graph.png", use_column_width=True, caption='It is abundantly clear that while the model can get to some classifications into three steps, there is a very long tail of decisions to finally get to terminal nodes.')
+        st.write("""Another attempt was made by removing a couple features, particularly the `month` and the average temperature (`tavg`) to help control some of the colinearity.""")
+        st.image("./images/dt2_confusion_matrix.png", use_column_width=True, caption='However even with the removal of features, the model is still overfitting the data.')
+        st.image('./images/dt_graph_no_tavg_no_month.png', use_column_width=True, caption='The Decision Tree diagram shows that the model is still overfitting the data but with a greater distribution of steps to terminal nodes.')
+        st.write("""One final attempt was made by setting a maximum depth of 5 to the tree 
+                 and setting the maximum features to be the square root of the total number of features.
+                 This model returned an accuracy of `~0.59` on the testing set. The confusion martix reflects this inaccuracy.""")
+        st.image('./images/hyper_dt_confusion_matrix.png', use_column_width=True, caption='The Confusion Matrix shows that the Decision Tree model is 62% accurate on the testing set.')
+        st.image("./images/dt_graph_no_tavg.png", use_column_width=True, caption='While hyperparameterizing the model helped reduce the number of terminal nodes, it was at the expense of accuracy.')
+        st.write("""
+        ## Conclusion
+        Similar to the heirarchical clustering method, 
+                 the Decision Tree model showcases how there is an intricate relationship between the features 
+                 and how many "sub-groupings" are needed to understand how to classify the data. 
+                 What is clear however is that the model understands there is a strong relationship between the time of year, the temperature and the energy demand.""")
+    if sub_tabs == 'Regression':
+        log_train = pd.read_feather("./data/log_x_train.feather")
+        log_test = pd.read_feather("./data/log_x_test.feather")
+        st.write("""All code can be found in this [notebook](https://github.com/prcedrght/ml-class-renewables/blob/main/data/supervised_learning.ipynb).""")
+        st.title("Regression")
+        st.write("""
+        Typically when discussing Regression, there are two types: Linear and Logisitc. 
+                 They both are used to model the relationships between variables and predict outcomes.
+                 But they differ in one key way, what type of outcome they are trying to predict. 
+                 Linear regression is a method used when attempting to find a 
+                 "best fit" of a continuous dependent variable to one or many independent variables while 
+                 Logistic regression is used when the dependent variable is binary.
+                 Interestingly enough, the statistical method to calculate these relationships are same
+                 with the only difference being that Logistic regression uses the Sigmoid function to 
+                 the linear inputs in a probability which is used to classify the data. 
+        Connected to optimizing logistic regression models is the Maximum Likelihood Estimation (MLE).
+        The idea is to optimize the parameters (the independent variables coefficients) 
+                 of the model to maximize the likelihood of the observed data.
+""")
+        st.write("""
+        ## Data Prep
+        Much like the other modeling methods, the data needed to be prepared for the logistic regression model. 
+                 Specifically, the categorical variables were encoded into dummy variables, and the demand lables were coverted into 
+                 binary labels deonting either `High` or `Low` demand. It was then split into training and testing sets.""")
+        st.write("Logistic Regression Training Set")
+        st.dataframe(log_train)
+        st.write("Logistic Regression Testing Set")
+        st.dataframe(log_test)
+        st.write("""
+        ## Results
+        The Logisitic Regression model performs quite well with an accruarcy of `0.88` on the testing set. 
+                 This could be in part because the model is only predicting two classes, `High` and `Low` demand.""")
+        st.text("""
+Classification Report:
+              precision    recall  f1-score   support
+
+           0       0.87      0.89      0.88     13575
+           1       0.90      0.88      0.89     14821
+
+    accuracy                           0.89     28396
+   macro avg       0.89      0.89      0.89     28396
+weighted avg       0.89      0.89      0.89     28396
+""")
+        st.image('./images/log_confusion_matrix.png', use_column_width=True)
+        st.write("""For comparision, a multinomial Naïve Bayes model was also run on the same data 
+                 and returned an accuracy of `0.87` on the testing set. These are very similar results, this likely because the features
+                 of the model are both approximately independent and the features and target have a linear relationship.""") 
+        st.text("""
+Classification Report:
+              precision    recall  f1-score   support
+
+           0       0.85      0.88      0.86     13575
+           1       0.89      0.86      0.87     14821
+
+    accuracy                           0.87     28396
+   macro avg       0.87      0.87      0.87     28396
+weighted avg       0.87      0.87      0.87     28396
+""")
+        st.image('./images/mnb_log_confusion_matrix.png', use_column_width=True) 
 with conclusion:
     st.title("Conclusion")
     st.write("Coming Soon!")
