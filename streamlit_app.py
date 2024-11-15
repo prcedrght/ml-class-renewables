@@ -55,15 +55,33 @@ with intro:
     st.header("Introduction")
     st.write("""#### _Can peak energy demands be optimized by understanding when renewable energy is most efficient?_""")
     st.image("./images/renewables_collage.png", use_column_width=True, caption='Renewable Energy as envisioned by GenAI')
-    st.write("""Earth is in a crisis. Since the dawn of the industrial revolution modern society has become heavily dependent on the finite resources of fossil fuels which are a major contributor, if not the sole driver, behind modern [warming trends](https://bpb-eu-w2.wpmucdn.com/blogs.reading.ac.uk/dist/3/187/files/2020/01/lia_mwp-1.png). This existential threat is true for every single person on Earth, no one will be able to totally avoid the turmoil this is causing. Heat waves, droughts, deep freezes, flooding, famine and diseases will all be inescapable. While [experts suggest](https://fortune.com/2024/04/10/united-nations-climate-chief-humanity-has-2-years-to-save-the-world/) there is time to curb the effects of climate change, there is still significant effort needed to ensure a future for the next generations. Thankfully a bright spot can be seen amongst the smog — the advancement of “green” energy sources and technologies. The ability to harness solar, wind, hydropower, or geothermal energy unlocks a paradigm that is rooted in clean, renewable power generation, and one that mitigates humanity’s impact on the planet. These sources of energy are exciting but they come with shared challenges. For example hydropower — like energy that comes from a dam or newer technology that harnesses the [kinetic energy of the tides and ocean currents](https://www.pnnl.gov/explainer-articles/tidal-energy#:~:text=What%20is%20tidal%20energy%3F,the%20water%20to%20move%20faster.) — requires significant infrastructure to move the energy captured from its point of origin to the consumer. As of 2023, the Hoover Dam was capable of generating [1,080 megawatts](https://www.statista.com/statistics/1360603/power-capacity-of-the-hoover-dam/) at any given moment. That is enough energy to power for roughly one million homes. However the dam is located in a relatively remote location (as are most dams), and Los Angeles which is the city that [consumes most of that energy (15%)](https://www.eia.gov/kids/for-teachers/field-trips/hoover-dam-hydroelectric-plant.php#:~:text=Nineteen%20percent%20of%20the%20electricity,that%20is%20270%20miles%20away.) is 270 miles away. Aside from proximity challenges, each renewable energy source faces the challenge of relying on non-human factors like the weather — solar energy requires sunshine, wind requires wind, etc. This means that renewable energy sources have a unique set of optimal weather conditions in which they can operate most efficiently.""")
-    st.write("""With the invention of the internet and interconnectedness of things, also came the ability to better understand and monitor energy consumption on the electric grid. This technology gave birth to the smart grid. A [smart grid relies on two-way communication](https://ieeexplore.ieee.org/document/8452969) between the power stations, batteries and the consumers to better utilize the energy available. For example, if energy is in high demand, and customers are connected to a smart grid, energy companies can adjust thermostat settings to manage consumption and ensure blackouts do not occur. There is complicated modeling involved in balancing the supply and demand, and renewable energy sources' notoriety for being sporadic make that more difficult. By examining the relationship between renewable energy efficiency and grid demand, new evidence could be used in modeling to better plan for grid stress and ease for storage.""")
+    st.write("""Earth is in a crisis. Since the dawn of the industrial revolution modern society has become heavily dependent on the finite resources of fossil fuels which are a major contributor, if not the sole driver, behind modern [warming trends](https://bpb-eu-w2.wpmucdn.com/blogs.reading.ac.uk/dist/3/187/files/2020/01/lia_mwp-1.png). 
+             This existential threat is true for every single person on Earth, no one will be able to totally avoid the turmoil this is causing. Heat waves, droughts, deep freezes, flooding, famine and diseases will all be inescapable. 
+             While [experts suggest](https://fortune.com/2024/04/10/united-nations-climate-chief-humanity-has-2-years-to-save-the-world/) there is time to curb the effects of climate change, there is still significant effort needed to ensure a future for the next generations. 
+             Thankfully a bright spot can be seen amongst the smog — the advancement of “green” energy sources and technologies. The ability to harness solar, wind, hydropower, or geothermal energy unlocks a paradigm that is rooted in clean, renewable power generation, and one that mitigates humanity’s impact on the planet. 
+             These sources of energy are exciting but they come with shared challenges. 
+             For example hydropower — like energy that comes from a dam or newer technology that harnesses the [kinetic energy of the tides and ocean currents](https://www.pnnl.gov/explainer-articles/tidal-energy#:~:text=What%20is%20tidal%20energy%3F,the%20water%20to%20move%20faster.) — requires significant infrastructure to move the energy captured from its point of origin to the consumer. 
+             As of 2023, the Hoover Dam was capable of generating [1,080 megawatts](https://www.statista.com/statistics/1360603/power-capacity-of-the-hoover-dam/) at any given moment. 
+             That is enough energy to power for roughly one million homes. However the dam is located in a relatively remote location (as are most dams), and Los Angeles which is the city that [consumes most of that energy (15%)](https://www.eia.gov/kids/for-teachers/field-trips/hoover-dam-hydroelectric-plant.php#:~:text=Nineteen%20percent%20of%20the%20electricity,that%20is%20270%20miles%20away.) is 270 miles away. 
+             Aside from proximity challenges, each renewable energy source faces the challenge of relying on non-human factors like the weather — solar energy requires sunshine, wind requires wind, etc. 
+             This means that renewable energy sources have a unique set of optimal weather conditions in which they can operate most efficiently.""")
+    st.write("""With the invention of the internet and interconnectedness of things, also came the ability to better understand and monitor energy consumption on the electric grid. 
+             This technology gave birth to the smart grid. A [smart grid relies on two-way communication](https://ieeexplore.ieee.org/document/8452969) between the power stations, batteries and the consumers to better utilize the energy available. 
+             For example, if energy is in high demand, and customers are connected to a smart grid, energy companies can adjust thermostat settings to manage consumption and ensure blackouts do not occur. 
+             There is complicated modeling involved in balancing the supply and demand, and renewable energy sources' notoriety for being sporadic make that more difficult. 
+             By examining the relationship between renewable energy efficiency and grid demand, new evidence could be used in modeling to better plan for grid stress and ease for storage.""")
     st.image("./images/smart_grid.jpeg", use_column_width=True, caption='Smart Grids as the future of energy consumption imagined by AI.')
     st.write("""
     Machine learning (ML) techniques offer a means to insights in tackling these challenges by providing advanced tools for analyzing and optimizing the complex dynamics of renewable energy and smart grids. 
     While any given ML algorithms may not provide a clear answer, it can process vast amounts of data from various sources, such as weather forecasts, energy consumption patterns, and grid performance metrics, to predict energy production but more importantly allow for more questions and research to occur. 
     Predictive capability enable more efficient integration of renewable energy into the grid, minimizing waste and enhancing reliability. 
     Furthermore, ML can facilitate real-time decision-making and adaptive control strategies, allowing for dynamic adjustments to energy distribution and storage. 
-    By leveraging these technologies, we can create a more resilient and sustainable energy infrastructure that not only meets current demands but also adapts to future challenges, ultimately contributing to a more sustainable and environmentally friendly energy landscape.
+    By leveraging these technologies, we can create a more resilient and sustainable energy infrastructure that not only meets current demands but also adapts to future challenges, ultimately contributing to a more sustainable and environmentally friendly energy landscape.""")
+    st.write("""
+In this study, the aim is to explore whether renewable energy generation has a relationship with grid demand, and if so how might energy providers enhance their smart grids with this knowledge. 
+             Through focused machine learning algorithms designed to account for the inherent variability and unpredictability of renewable energy, models can be used to inform how authorities might optimize energy production and distribution. 
+             Such models could significantly improve the efficiency of smart grids, reduce reliance on fossil fuels, and decrease the likelihood of energy shortages. 
+             Ultimately, the research endeavors to contribute to a more sustainable energy infrastructure, one that not only meets the needs of today but anticipates and adapts to the challenges of tomorrow.
 """)
     st.write("""
     #### 10 Questions to Answer:
@@ -183,7 +201,7 @@ final_df.head()""")
 
 with modeling:
     st.write("""All code can be found in this [notebook](https://github.com/prcedrght/ml-class-renewables/blob/main/data/eda_notebook.ipynb).""")
-    sub_tabs = st.selectbox("Use dropdown to explore different models:", ["PCA", "Clustering", "ARM"])
+    sub_tabs = st.selectbox("Use dropdown to explore different models:", ["PCA", "Clustering", "ARM", "Naïve Bayes"])
     if sub_tabs == "PCA":
         pca_head = pd.read_feather("./data/pca_head.feather")
         st.title("PCA")
@@ -429,6 +447,33 @@ All in all, the ARM method proved useful in identifying some possible explanatio
 It would seem energy generation between different months of the year are more closely related than the weather, perhaps this is because of the seasonality to generation and weather.
 """)
         st.image("./images/association_rules.png", use_column_width=True, caption='The Association Rules plot shows that there are only 7 rules amongst 6 unique items that have a strong likelihood of occuring together.')
+    if sub_tabs == "Naïve Bayes":
+        st.title("Naïve Bayes")
+        st.write("""
+        Naïve Bayes is a classification technique based on Bayes' Theorem with an assumption of independence between predictors. 
+        In simple terms, a Naïve Bayes classifier assumes that the presence of a particular feature in a class is unrelated to the presence of any other feature. 
+        Even if these features depend on each other or upon the existence of the other features, all of these properties contribute to the probability of the class label.
+        Naïve Bayes is especically useful for several reasons, it is simple, fast, can be used for binary or multiclass classification, and offers interpretability.
+        Because the underlying distribution of the features determines whether a Gaussian, Multinomial, Bernoulli or Categorical model is used, the data needs to be of the same feature distribution.
+        With that said, there are ways around this by using a custom model, feature transformation or separate models and combining them.
+        """)
+        st.write("""
+        ### Data Prep
+        #### Multinomial Naïve Bayes
+        In order to prepare the data for 
+        """)
+        st.write("""
+        ### Results
+        The model was trained and tested on the data with the following results:
+        """)
+        st.write("""
+        #### Confusion Matrix
+        """)
+        st.image("./images/nb_confusion_matrix.png", use_column_width=True, caption='The Confusion Matrix shows that the model is correctly predicting high demand 75% of the time.')
+        st.write("""
+        #### Classification Report
+        """)
+
 with conclusion:
     st.title("Conclusion")
     st.write("Coming Soon!")
