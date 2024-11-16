@@ -201,7 +201,7 @@ final_df.head()""")
 
 with modeling:
     
-    sub_tabs = st.selectbox("Use dropdown to explore different models:", ["PCA", "Clustering", "ARM", "Naïve Bayes", 'Decision Trees', 'Regression'])
+    sub_tabs = st.selectbox("Use dropdown to explore different models:", ["PCA", "Clustering", "ARM", "Naïve Bayes", 'Decision Trees', 'Regression', 'SVM', 'Ensemble Learning'])
     if sub_tabs == "PCA":
         st.write("""All code can be found in this [notebook](https://github.com/prcedrght/ml-class-renewables/blob/main/data/eda_notebook.ipynb).""")
         pca_head = pd.read_feather("./data/pca_head.feather")
@@ -710,7 +710,12 @@ Classification Report:
    macro avg       0.87      0.87      0.87     28396
 weighted avg       0.87      0.87      0.87     28396
 """)
-        st.image('./images/mnb_log_confusion_matrix.png', use_column_width=True) 
+        st.image('./images/mnb_log_confusion_matrix.png', use_column_width=True)
+
+    if sub_tabs == "SVM":
+        st.title("Support Vector Machines")
+    if sub_tabs == "Ensemble Learning":
+        st.title("Ensemble Learning")
 with conclusion:
     st.title("Conclusion")
     st.write("Coming Soon!")
