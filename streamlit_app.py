@@ -84,6 +84,15 @@ In this study, the aim is to explore whether renewable energy generation has a r
              Ultimately, the research endeavors to contribute to a more sustainable energy infrastructure, one that not only meets the needs of today but anticipates and adapts to the challenges of tomorrow.
 """)
     st.write("""
+        The integration of renewable energy sources into smart grid systems presents both a promising opportunity and a complex challenge. 
+        By addressing critical questions about renewable energies, 
+             this study seeks to deepen our understanding of which machine learning models might best support modeling our power consumption habits in relation to weather conditions,
+              regional climate impacts, and the influence of seasonality and time of day. 
+             By leveraging machine learning techniques, we aim to develop predictive models that enhance the efficiency and reliability of smart grids, 
+             ultimately reducing our reliance on fossil fuels and paving the way for a more sustainable and resilient energy future. 
+             This research not only addresses the immediate challenges of energy management but also contributes to the broader goal of mitigating climate change 
+             and securing a healthier planet for future generations.""")
+    st.write("""
     #### 10 Questions to Answer:
     1. How well can renewable energy sources be integrated into meeting smart grid demands?
     2. What are the optimal weather conditions for renewable energy sources?
@@ -713,7 +722,23 @@ weighted avg       0.87      0.87      0.87     28396
         st.image('./images/mnb_log_confusion_matrix.png', use_column_width=True)
 
     if sub_tabs == "SVM":
+        # svm_df_train
+        # svm_df_test
+        st.write("""All code can be found in this [notebook](https://github.com/prcedrght/ml-class-renewables/blob/main/data/supervised_learning.ipynb).""")
         st.title("Support Vector Machines")
+        st.write("""
+        Support Vector Machines (SVM) are a supervised learning model used for classification and regression. 
+        In the simplest terms, they work by finding a hyperplane that best separates classes in the data. A hyperplane is defined as flat, affine subspace of one dimension less than its ambient space.
+        More simply put, for two dimensional spaces the hyperplane is a line, while in three dimensional spaces it is a plane cutting across the `X`, `Y` and `Z` axes. 
+        In higher dimensions, it is a hyperplane.
+        SVMs are linear separators meaning they draw straight lines between the classes of data. 
+        The goal of the separators are to maximize the distance, or margin, between those lines or hyperplanes and the closest data points from each class, also known as the support vectors.
+        """)
+        st.image('./images/svm_kernel.png', use_column_width=True, caption='The Kernel Trick is used to transform the data into a higher dimensional space where it is linearly separable.')
+        st.write("""
+        Of course, not all data is linearly separable like in the [image from Medium](https://medium.com/@apurvjain37/support-vector-machine-s-v-m-classifiers-and-kernels-9e13176c9396) above. 
+        So SVMs use something known as the "kernel trick" to transform the data into a higher dimensional space where it is linearly separable.
+""")
     if sub_tabs == "Ensemble Learning":
         st.title("Ensemble Learning")
 with conclusion:
