@@ -726,6 +726,7 @@ weighted avg       0.87      0.87      0.87     28396
         # svm_df_test
         st.write("""All code can be found in this [notebook](https://github.com/prcedrght/ml-class-renewables/blob/main/data/supervised_learning.ipynb).""")
         st.title("Support Vector Machines")
+        st.image('./images/svm_graph.png', use_column_width=True, caption='Example of Support Vectors borrowed from https://www.ml-science.com/support-vector-machines.')
         st.write("""
         Support Vector Machines (SVM) are a supervised learning model used for classification and regression. 
         In the simplest terms, they work by finding a hyperplane that best separates classes in the data. A hyperplane is defined as flat, affine subspace of one dimension less than its ambient space.
@@ -738,6 +739,17 @@ weighted avg       0.87      0.87      0.87     28396
         st.write("""
         Of course, not all data is linearly separable like in the [image from Medium](https://medium.com/@apurvjain37/support-vector-machine-s-v-m-classifiers-and-kernels-9e13176c9396) above. 
         So SVMs use something known as the "kernel trick" to transform the data into a higher dimensional space where it is linearly separable.
+        There are various types of kernels that can be used to transform the data, these include linear, polynomial, radial basis function (RBF), and sigmoid.
+        The choice of kernel is dependent on the data and the problem being solved.
+        For example, a polynomial kernel is best when the features have a polynomial relationship, on the other hand an RBF kernel is best when the features have a non-linear relationship.
+        \n
+        The polynomial kernel is defined as the follwing where `d` is the degree of the polynomial and `r` is the constant term:
+        """)
+        st.latex(r"""K(x, y) = (x^Ty + r)^d""")
+        st.write("""The RBF kernel is defined as the following where `gamma` is the kernel coefficient and `||x - x'||` is the Euclidean distance between the two points.""")
+        st.latex(r"""K(x, y) = \text{exp}(-\gamma ||x - y||^2)""")
+        st.write("""In order to reduce the computational cost of transforming the data into a higher dimensional space, SVMs use the dot product to implicitly map the data into that space.
+        To illustrate this, consider the following example of a 2D points and a polynomial kernel where `d=2` and `r=1`:
 """)
     if sub_tabs == "Ensemble Learning":
         st.title("Ensemble Learning")
