@@ -48,7 +48,7 @@ def get_base64_of_bin_file(bin_file):
 #     )
 st.title("Smart Grid Load Prediction with Renewable Engergy Integration & Optimization")
 
-intro, data, modeling, conclusion, references = st.tabs(["Introduction", "Data Prep & EDA", "Modeling", "Conclusion", "References"])
+intro, data, modeling, conclusion = st.tabs(["Introduction", "Data Prep & EDA", "Modeling", "Conclusion", ])
 
 # Introduction Tab
 with intro:
@@ -723,7 +723,7 @@ weighted avg       0.87      0.87      0.87     28396
 
     if sub_tabs == "SVM":
         # svm_df_train
-        # svm_df_test
+        svm_df_test = pd.read_feather("./data/svm_X_test.feather")
         st.write("""All code can be found in this [notebook](https://github.com/prcedrght/ml-class-renewables/blob/main/data/supervised_learning.ipynb).""")
         st.title("Support Vector Machines")
         st.image('./images/svm_graph.png', use_column_width=True, caption='Example of Support Vectors borrowed from https://www.ml-science.com/support-vector-machines.')
@@ -751,8 +751,106 @@ weighted avg       0.87      0.87      0.87     28396
         st.write("""In order to reduce the computational cost of transforming the data into a higher dimensional space, SVMs use the dot product to implicitly map the data into that space.
         To illustrate this, consider the following example of a 2D points and a polynomial kernel where `d=2` and `r=1`:
 """)
+        st.latex(r"""\text{Let x = [1, 2] and y = [2, 3]}""")
+        st.latex(r"""K(x, y) = (x^Ty + 1)^2""")
+        st.latex(r"""K(x,y) = (1*2 + 2*3 + 1)^2 = 16""")
+        st.write("""Using this method, you can cast this inner product into the linear separator equation without having to physcially transform the feautres into higher dimensions.""")
+        st.write("""
+        ## Data Prep
+        Because this is a supervised learning method, the data needed to be split into training and testing sets. Additionally, the numerical features were normalized
+        while the categorical feature `eia_region` was encoded into dummy variables.
+""")
+        st.dataframe(svm_df_test)
+        st.write("""
+        ## Results
+        ### Linear Kernel
+        The linear kernel returned an accuracy too low to be useful for energy management even though it high relatively high recall for `High` classifications. In order to improve the model, two other kernels were tested: The Polynomial and RBF.""")
+        st.image('./images/svc_linear_1_confusion_matrix.png', use_column_width=True, caption="This particular SVM was running under a 50% accuracy rate. This is likely because climate and energy data is not linearly separable.")
+        st.write("""
+        ### Polynomial Kernel
+        By transforming the data into a polynomial space where `d=2` and the cost is `0.1`, the model accuracy increased drastically to `0.97`. This is only slightly surprising because important features like the time of year have
+                 a polynomial shape to them. The model is able to predict the multiple classes with high accuracy however when increasing the cost of the model the accuracy reaches `1.0` reach creates a suspicion of overfitting.""")
+        st.image('./images/svc_poly_0.1_confusion_matrix.png', use_column_width=True, caption='The Polynomial Kernel SVM model is suspciously accurate.')
+        st.write("""
+        ### RBF Kernel
+        Similarly, the RBF kernel returned promising results with a low cost. The accuracy of this model was `0.98` on the testing set. 
+                 This is likely because the RBF kernel is able to capture the non-linear relationships between the features.
+                 However, when the cost is increased to `1.0`, the accuracy of the model reaches `1.0` which is a red flag for overfitting.""")
+        st.image('./images/svc_rbf_0.1_confusion_matrix.png', use_column_width=True, caption='The RBF Kernel SVM model is also very accurate.')
+        st.write("""
+        ## Conclusion
+        While linear SVM is not a good fit for predicting demand, 
+                the data has a clearn polynomial and non-linear relationships within.
+        Interestingly enough, both of those models seem to struggle with the `Low` and `Medium Low` demand labels.
+        This could be because the data is not well distributed amongst the classes or the features are not well separated.
+                Another likely cause is that boundaries between those two classes are highly vairant and the model is not able to capture that variance.""")
     if sub_tabs == "Ensemble Learning":
         st.title("Ensemble Learning")
+        st.write("""
+        ## Overview
+        Ensemble learning is a machine learning paradigm where multiple models are trained to solve the same problem 
+                 and then combined to improve the performance of the model.
+        The idea between ensemble learning is to both reduce variance and bias in the model. To achieve this, 
+                 there are several methods that can be used such as bagging, boosting, stacking and voting but in reality ensemble learning could be combining many models with some sort of heuristic and weighting.
+        \n
+        Probably the most well known example is the Random Forest model. This is a bagging method that uses multiple decision trees to make a prediction.
+        A Random Forest model samples from the dataset with replacement as well as randomly select different features to generate several different decision tress. The model then averages the predictions of each tree to make a final prediction.
+        This is also a popular approach because it helps reduce the risk of overfitting.
+        \n
+        ### Random Forest Model
+        Using a max depth of 5 and 100 estimators, this model was achieving 93% accuracy with relatively high precision and recall. Similar to other models,
+                 this model underpreforms with the `Medium Low` and `Low` demand labels.""")
+        st.image('./images/rf_confusion_matrix.png', use_column_width=True, caption='Compared to a hyperparametrized standalone DT, the Random Forest significantly outpeforms a single model.')
+        st.write("""Here are some examples of the various estimators the Random Forest model used to make its predictions.""")
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.image('./images/random_forest_graph0.png', use_column_width=True)
+        with col2:
+            st.image('./images/random_forest_graph1.png', use_column_width=True)
+        with col3:
+            st.image('./images/random_forest_graph2.png', use_column_width=True)  
+        st.write("""
+        ## Conclusion
+        The Random Forest model is a powerful tool for classification tasks. 
+                 It is able to capture the relationships between the features and the target variable without overfitting the data.
+                 Improving this model would likely be the most beneficial for predicting energy demand.""")
 with conclusion:
     st.title("Conclusion")
-    st.write("Coming Soon!")
+    st.write("""
+        A random forest model appears to be the best method for generating accurate predictions for demand, but that is only one piece of the puzzle with regards to smart grids.
+        In addition to predicting demand, more models would need to be produced to predict the energy generation from renewable sources. 
+                The same techniques could be applied except that the target will no longer be the demand but rather the generation.
+        From here, one could point to conditions where the demand is low but the generation is high and vice versa. 
+        This would allow energy authorities to properly plan storage and grid flow if demand is unexpectedly high.
+        \n
+        Overall, Machine Learning techniques are a powerful tool for understanding the relationship between
+             energy demand and climate data. Demand and weather are tightly intertwined and models reflect that but the complexity of that relationship is not so straightforward.
+        Generally speaking, the models that performed best were the ones that were able to disentagle the "mostly" non-linear relationships. 
+             They also show cased the value of conceiving the objective at a higher dimension than a typical linear relationship as most of us might try to visualize in our heads.
+        There are distinct patterns in the data, and ensuring the model can appropriately understand those patterns is key to making accurate predictions. 
+        \n
+        To really get the most out of these models, moving to a finer level of insights would be most beneficial. 
+        Regional differences between demand and generation are a little more nuanced for a general model even though a general model can understand those differences.
+        A random forest model that has been fine tuned for regional specificity would be an approach that could be made to continue this work.
+        These regional models would also massively benefit from finer geographical detail. When generalizing both across time and geography, 
+                the model loses the sensitivity. For example, one part of a region could be experiencing more sunshine on a given day, week or month than another. 
+        Having those details would create a better mapping of where the regional generation capacity exits and where the demand can be found.
+        
+        """)
+    st.image('./images/types-of-renewable-energy-sources.png', use_column_width=True)
+    st.write("""
+        Maybe the largest challenge with respect to optimizing the smart grid is not necessarily the integration or planning of the systems but rather whether these patterns will continue to hold true in a future where the climate is shifting rapidly.
+        Because ML techniques rely on historical data, if the future does not look like the past, then the models will not be able to predict how and where to optimize the grid.
+        Another siginificant challenge is striking a balance with the energy needed to calculate these models at scale, and ensuring there is enough for the grid. 
+        AI is rapidly progressing and municipalities are racing to create more energy sources to meet the demand. Again because of the historical data usage,
+                these models will need to be consistently analyzed and updated to ensure they are still accurate.
+        \n
+        Of course all of these exciting possibilities are contingent accurate data in addition to implementing these systems to combate climate change. 
+        This will not go anywhere if we do not motivate individuals and lobby governments to start investing in our future. 
+        Many are always so concerned about more superficial issues like "the economy" or "jobs" but the reality is that none of those will matter if we do not address these climate concerns.
+        In fact, the economy and jobs will only benefit from investing in renewable energy infrastructure. There is a glimmer of hope in this ever increasingly dire situation but we must act now.
+        \n
+        
+        
+""")
+    st.image('./images/hope.jpeg', use_column_width=True)
